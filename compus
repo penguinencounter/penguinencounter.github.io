@@ -1,0 +1,5 @@
+git add *
+git commit -m "$(date '+%F %H:%M:%S') autocommit"
+git push
+echo Done
+
