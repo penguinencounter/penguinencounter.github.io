@@ -1,6 +1,7 @@
 body {
     background-color: #222222;
     color: white;
+    font-family: 'Ubuntu Mono', monospace;
 }
 a {
     text-decoration: none;
