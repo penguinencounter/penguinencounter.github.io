@@ -1,6 +1,6 @@
 echo Commiting as $(date '+%F %H:%M:%S') autocommit
-git add *
-git commit -m "$(date '+%F %H:%M:%S') autocommit"
-git push
+git add * | /dev/null
+git commit -m "$(date '+%F %H:%M:%S') autocommit" | /dev/null
+git push | /dev/null
 echo Done
 
