@@ -16,13 +16,11 @@ var handleFiles = function () {
 }
 var beginUpload = function (e) {
     var inputElement = document.getElementById("importer");
-    e.target.value = "Waiting for file..."
-    e.target.className = "working";
     inputElement.click();
 }
 var completeUpload = function () {
     var e = document.getElementById("impbutton");
-    e.value = "File uploaded";
+    e.value = "Processing files...";
     e.className = "working";
     document.getElementById("result").innerHTML = data;
     console.log(data.decodeEscapeSequence())
@@ -30,7 +28,7 @@ var completeUpload = function () {
 }
 var resetButton = function() {
     var e = document.getElementById("impbutton");
-    e.value = "Ready - click to import";
+    e.value = "Import files";
     e.className = "idle";
 }
 
