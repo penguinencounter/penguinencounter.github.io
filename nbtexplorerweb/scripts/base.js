@@ -1,10 +1,12 @@
 var reader, data;
 let dropbox;
+let importedFiles = 0;
+let previousTimeout;
 var onLoad = function() {
     var inputElement = document.getElementById("importer");
     var button = document.getElementById("impbutton");
     console.log(inputElement);
-    inputElement.addEventListener("change", handleFiles, false);
+    inputElement.addEventListener("change", eventUploadFile, false);
     button.addEventListener("click", beginUpload)
 
     dropbox = button;
@@ -13,21 +15,35 @@ var onLoad = function() {
     document.addEventListener("dragenter", dragOverPage, false);
     dropbox.addEventListener("drop", drop, false);
 }
-var handleFiles = function () {
-    var resultElement = document.getElementById("result");
-    var file = this.files[0];
-    console.log(file);
-    reader = new FileReader();
-    reader.onload = (function(element) {return function(e) {data = e.target.result;setTimeout(completeUpload, 10)}; })(resultElement);
-    reader.readAsBinaryString(file);
+var eventUploadFile = function() {
+    handleFiles(this.files);
 }
-var handleFilesDrop = function (files) {
-    var resultElement = document.getElementById("result");
-    var file = files[0];
-    console.log(file);
-    reader = new FileReader();
-    reader.onload = (function(element) {return function(e) {data = e.target.result;setTimeout(completeUpload, 10)}; })(resultElement);
-    reader.readAsBinaryString(file);
+var handleFiles = function (files) {
+    for (let i in files) {
+        let file = files[i];
+        handleFile(file)
+    }
+    
+}
+var handleFile = function (file) {
+    if (file instanceof Blob) {
+        var resultElement = document.getElementById("result");
+        importedFiles ++;
+        console.log(file);
+        reader = new FileReader();
+        reader.onload = (function(element) {return function(e) {data = e.target.result;setTimeout(completeUpload, 10)}; })(resultElement);
+        reader.readAsBinaryString(file);
+        var labelElement = document.getElementById("filelistlabel");
+        if (importedFiles === 1) {
+            labelElement.innerHTML = "1 file loaded";
+        } else {
+            labelElement.innerHTML = importedFiles + " files loaded";
+        }
+        var nameElement = document.getElementById("currentfile");
+        nameElement.innerHTML = file.name;
+    } else {
+        console.log("Skipping non-Blob", file)
+    }
 }
 var beginUpload = function (e) {
     var inputElement = document.getElementById("importer");
@@ -35,11 +51,12 @@ var beginUpload = function (e) {
 }
 var completeUpload = function () {
     var e = document.getElementById("impbutton");
-    e.value = "Processing files...";
+    e.value = "Loading files";
     e.className = "working";
     document.getElementById("result").innerHTML = data;
     console.log(data.decodeEscapeSequence())
-    setTimeout(resetButton, 3000);
+    clearTimeout(previousTimeout)
+    previousTimeout = setTimeout(resetButton, 10);
 }
 var resetButton = function() {
     var e = document.getElementById("impbutton");
@@ -70,10 +87,10 @@ const drop = function (e) {
     console.log("DROP")
     e.stopPropagation();
     e.preventDefault();
-    
+    resetButton();
     const dt = e.dataTransfer;
     const files = dt.files;
-    handleFilesDrop(files);
+    handleFile(files[0]);
 }
 
 

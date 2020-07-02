@@ -25,3 +25,23 @@ input[type=button] {
     bottom: 0;
     right:0;
 }
+
+body {
+    background-color: #4287f5;
+    color: white;
+}
+
+#filelistbtn {
+    width: 64px;
+    height: 64px;
+}
+#filelistlabel {
+    width: 64px;
+    height: auto;
+    text-align: center;
+    font-size: 10px;
+}
+
+#currentfile {
+    font-size: 60px;
+}
