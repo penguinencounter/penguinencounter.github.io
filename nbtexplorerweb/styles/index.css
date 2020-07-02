@@ -15,5 +15,13 @@ input[type=button].working {
     color:white;
 }
 input[type=button] {
+    height: 47px;
+    width: auto;
+    display: block;
     margin: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right:0;
 }
