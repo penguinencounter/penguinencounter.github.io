@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>test</title>
+        <script>
+            
+        </script>
+        
+        <style>
+            input[type=button].idle {
+                padding: 10px;
+                border: 5px solid green;
+                background: #0a0;
+                color:white;
+            }
+            input[type=button]:hover.idle {
+                background: #0d0;
+                border: 5px solid #0a0;
+            }
+            input[type=button].working {
+                padding: 10px;
+                border: 5px solid orange;
+                background: #a80;
+                color:white;
+            }
+        </style>
+    </head>
+    <body onload="onLoad();">
+        <input type="file" id="importer" style="display:none;"><input type="button" value="Ready - click to import" id="impbutton" class="idle">
+        <div id="result"></div>
+    </body>
+</html>
