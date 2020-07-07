@@ -1,0 +1,50 @@
+.window {
+    position: absolute;
+    color:black;
+    width: 500px;
+    height: 300px;
+    background: rgba(124, 124, 124, 0.5);
+    z-index: 5;
+    top: 100px;
+    left: 100px;
+}
+.toolbar {
+    height:25px;
+    background: lightgrey;
+    font-size: 20px;
+}
+.bordered {
+    border: 1px solid white;
+}
+
+.toolbar-title {
+    padding-left: 5px;
+}
+
+.toolbar-button {
+    width: 25px;
+    height: 25px;
+    float: right;
+    text-align: center;
+    text-decoration: none;
+}
+.toolbar-button-close {
+    background-color: red;
+    color: black
+}
+.toolbar-button-fullscreen {
+    background-color: green;
+    color: white;
+}
+
+.content {
+    background-color: #006856;
+    /* Firefox */
+    height: -moz-calc(100% - 25px);
+    /* WebKit */
+    height: -webkit-calc(100% - 25px);
+    /* Opera */
+    height: -o-calc(100% - 25px);
+    /* Standard */
+    height: calc(100% - 25px);
+}

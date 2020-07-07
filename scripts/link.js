@@ -4,3 +4,4 @@
 var navTo = function(uri) {
     document.location = uri;
 }
+

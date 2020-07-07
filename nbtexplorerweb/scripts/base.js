@@ -1,5 +1,5 @@
 var reader, data;
-let dropbox;
+let dropbox, hint;
 let importedFiles = 0;
 let previousTimeout;
 var onLoad = function() {
@@ -9,18 +9,22 @@ var onLoad = function() {
     inputElement.addEventListener("change", eventUploadFile, false);
     button.addEventListener("click", beginUpload)
 
-    dropbox = button;
+    dropbox = document.getElementById("filelistbutton");
     dropbox.addEventListener("dragenter", dragEnter, false);
     dropbox.addEventListener("dragover", dragOver, false);
     document.addEventListener("dragenter", dragOverPage, false);
+    document.addEventListener("dragend", dragEnd, false);
     dropbox.addEventListener("drop", drop, false);
+
+    hint = $("#hint")
+    hint.hide();
+    reloadAllHandlers();
 }
 var eventUploadFile = function() {
     handleFiles(this.files);
 }
 var handleFiles = function (files) {
-    for (let i in files) {
-        let file = files[i];
+    for (let file of files) {
         handleFile(file)
     }
     
@@ -59,9 +63,8 @@ var completeUpload = function () {
     previousTimeout = setTimeout(resetButton, 10);
 }
 var resetButton = function() {
-    var e = document.getElementById("impbutton");
-    e.value = "Import files";
-    e.className = "idle";
+    var e = document.getElementById("filelistbutton");
+    e.src = "/nbtexplorerweb/img/FileList.png";
 }
 
 const dragEnter = function (e) {
@@ -75,12 +78,19 @@ const dragOver = function (e) {
     e.preventDefault();
 
 }
+const dragEnd = function (e) {
+    console.log("dragEnd")
+    // e.stopPropagation();
+    e.preventDefault();
+    hint.hide();
+}
 const dragOverPage = function (e) {
     console.log("dragOverPage")
     e.stopPropagation();
     e.preventDefault();
-    let button = document.getElementById("impbutton");
-    button.value = "Drop files here!";
+    let icon = document.getElementById("filelistbutton");
+    icon.src = "/nbtexplorerweb/img/ImportButton.png";
+    hint.show();
 }
 
 const drop = function (e) {
@@ -91,6 +101,7 @@ const drop = function (e) {
     const dt = e.dataTransfer;
     const files = dt.files;
     handleFile(files[0]);
+    hint.hide();
 }
 
 
