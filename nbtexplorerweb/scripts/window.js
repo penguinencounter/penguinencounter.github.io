@@ -1,3 +1,4 @@
+const classNameFilter = /(?:^| )window(?:$| )/gm;
 
 const maximize = function(jqWindowElement) {
     let el = jqWindowElement;
@@ -33,9 +34,9 @@ const reloadHandlersMaximize = function() {
     for (let target of targets) {
         
         if (target instanceof Element) {
-            console.log("Updating target", target)
+            // ("Updating target", target)
             let header = target.children[0].children;
-            console.log("Header has", header.length, "children")
+            // ("Header has", header.length, "children")
             let ok = 0;
             let skip = 0;
             let matches = 0;
@@ -45,7 +46,7 @@ const reloadHandlersMaximize = function() {
                     ok ++;
                     if (target2.className.search(/(?: |^)toolbar-button-fullscreen(?: |$)/g) > -1) {
                         matches ++;
-                        console.log("Matched!", target2)
+                        // ("Matched!", target2)
                         target2.addEventListener("click", relMaximize);
                     } else {
                         nomatches ++;
@@ -55,7 +56,7 @@ const reloadHandlersMaximize = function() {
                 }
                 
             }
-            console.log("Done in header", target.children[0], "Valid:", ok, "Invalid:", skip, "Matched:", matches, "Didn't match:", nomatches);
+            // ("Done in header", target.children[0], "Valid:", ok, "Invalid:", skip, "Matched:", matches, "Didn't match:", nomatches);
         } else {
         }
         ok = 0;
@@ -70,9 +71,9 @@ const reloadHandlersClose = function() {
     for (let target of targets) {
         
         if (target instanceof Element) {
-            console.log("Updating target", target)
+            // ("Updating target", target)
             let header = target.children[0].children;
-            console.log("Header has", header.length, "children")
+            // ("Header has", header.length, "children")
             let ok = 0;
             let skip = 0;
             let matches = 0;
@@ -82,7 +83,7 @@ const reloadHandlersClose = function() {
                     ok ++;
                     if (target2.className.search(/(?: |^)toolbar-button-close(?: |$)/g) > -1) {
                         matches ++;
-                        console.log("Matched!", target2)
+                        // ("Matched!", target2)
                         target2.addEventListener("click", relClose);
                     } else {
                         nomatches ++;
@@ -92,7 +93,7 @@ const reloadHandlersClose = function() {
                 }
                 
             }
-            console.log("Done in header", target.children[0], "Valid:", ok, "Invalid:", skip, "Matched:", matches, "Didn't match:", nomatches);
+            // ("Done in header", target.children[0], "Valid:", ok, "Invalid:", skip, "Matched:", matches, "Didn't match:", nomatches);
         } else {
         }
         ok = 0;
@@ -111,7 +112,7 @@ const dragWindow = function(e) {
     let viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
     let elWindow = e.target;
-    const classNameFilter = /(?:^| )window(?:$| )/gm;
+    
     let attempts = 0;
     let parents = 0;
     while (attempts < 100) {
@@ -123,7 +124,7 @@ const dragWindow = function(e) {
         }
     }
     let build = "Attempting";
-    console.log(build);
+    // (build);
     let jqWindow = $(elWindow);
     let windowX = jqWindow.css("left");
     let windowY = jqWindow.css("top");
@@ -137,10 +138,10 @@ const dragWindow = function(e) {
         checkingEntity = checkingEntity.parentElement;
     }
     if (checkingEntity.mouseHeld) {
-        console.log("Check passed")
+        // ("Check passed")
         e.stopPropagation();
         e.preventDefault();
-        // console.log("move:", e.pageX, e.pageY);
+        // // ("move:", e.pageX, e.pageY);
         let Xdistance = e.pageX - preX;
         let Ydistance = e.pageY - preY;
 
@@ -171,7 +172,7 @@ const dragWindow = function(e) {
         }
 
         // Should have a result here.
-        console.log(resultX, resultY, "movement")
+        // (resultX, resultY, "movement")
         jqWindow.css("top", resultY + "px");
         jqWindow.css("left", resultX + "px");
         if (doBorder) {
@@ -188,7 +189,33 @@ const dragWindow = function(e) {
 let windowMouseDownEvent = function(e) {
     e.stopPropagation();
     e.preventDefault();
-    
+    let maxZIndex = 5;
+    let possibilities = $(".window");
+    let steps = possibilities.length + 1;
+    let step = 0;
+    for (let item of possibilities) {
+        step ++;
+        console.info(`Reorganizing windows... [${step}/${steps} ${Math.floor(step/steps*100)}%]`)
+        if (Number($(item).css("z-index")) >= maxZIndex) {maxZIndex = Number($(item).css("z-index")) + 1;} else {}
+    }
+    // ("out:", maxZIndex);
+    step ++;
+    console.info(`Reorganizing windows... [${step}/${steps} ${Math.floor(step/steps*100)}%] (Applying changes...)`)
+    let base = e.target;
+    let attempts = 0;
+    while (attempts < 100) {
+        if (base.className.search(classNameFilter) > -1) {
+            break;
+        }
+        else {
+            base = base.parentElement;
+        }
+        attempts ++;
+    }
+    // base should be a window
+    // (base);
+    $(base).css("z-index", maxZIndex)
+    console.info(`Reorganizing windows... [Done]`)
 }
 
 
@@ -197,12 +224,13 @@ const reloadHandlersDrag = function() {
     for (let target of targets) {
         
         if (target instanceof Element) {
-            console.log("Updating target", target)
+            // ("Updating target", target)
             let header = target.children[0];
             header.addEventListener("mousedown", function(e) {e.target.parentElement.mouseHeld = true;e.preventDefault();preX=e.pageX;preY=e.pageY;});
+            target.addEventListener("mousedown", windowMouseDownEvent);
             target.addEventListener("mouseup", function(e) {e.target.parentElement.mouseHeld = false;e.stopPropagation();e.preventDefault();});
             target.addEventListener("mousemove", dragWindow)
-            console.log("Done...");
+            // ("Done...");
         } else {
         }
         ok = 0;
@@ -213,7 +241,11 @@ const reloadHandlersDrag = function() {
 }
 
 const reloadAllHandlers = function() {
+    console.info("Registering event handlers ... [1/3]");
     reloadHandlersClose();
+    console.info("Registering event handlers ... [2/3]");
     reloadHandlersMaximize();
+    console.info("Registering event handlers ... [3/3]");
     reloadHandlersDrag();
+    console.info("Registering event handlers ... Done.");
 }

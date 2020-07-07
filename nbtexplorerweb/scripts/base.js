@@ -5,7 +5,7 @@ let previousTimeout;
 var onLoad = function() {
     var inputElement = document.getElementById("importer");
     var button = document.getElementById("impbutton");
-    console.log(inputElement);
+    // console.log(inputElement);
     inputElement.addEventListener("change", eventUploadFile, false);
     button.addEventListener("click", beginUpload)
 
@@ -33,7 +33,7 @@ var handleFile = function (file) {
     if (file instanceof Blob) {
         var resultElement = document.getElementById("result");
         importedFiles ++;
-        console.log(file);
+        // console.log(file);
         reader = new FileReader();
         reader.onload = (function(element) {return function(e) {data = e.target.result;setTimeout(completeUpload, 10)}; })(resultElement);
         reader.readAsBinaryString(file);
@@ -46,7 +46,7 @@ var handleFile = function (file) {
         var nameElement = document.getElementById("currentfile");
         nameElement.innerHTML = file.name;
     } else {
-        console.log("Skipping non-Blob", file)
+        // console.log("Skipping non-Blob", file)
     }
 }
 var beginUpload = function (e) {
@@ -58,7 +58,7 @@ var completeUpload = function () {
     e.value = "Loading files";
     e.className = "working";
     document.getElementById("result").innerHTML = data;
-    console.log(data.decodeEscapeSequence())
+    // console.log(data.decodeEscapeSequence())
     clearTimeout(previousTimeout)
     previousTimeout = setTimeout(resetButton, 10);
 }
@@ -68,24 +68,24 @@ var resetButton = function() {
 }
 
 const dragEnter = function (e) {
-    console.log("dragEnter")
+    // console.log("dragEnter")
     e.stopPropagation();
     e.preventDefault();
 }
 const dragOver = function (e) {
-    console.log("dragOver")
+    // console.log("dragOver")
     e.stopPropagation();
     e.preventDefault();
 
 }
 const dragEnd = function (e) {
-    console.log("dragEnd")
+    // console.log("dragEnd")
     // e.stopPropagation();
     e.preventDefault();
     hint.hide();
 }
 const dragOverPage = function (e) {
-    console.log("dragOverPage")
+    // console.log("dragOverPage")
     e.stopPropagation();
     e.preventDefault();
     let icon = document.getElementById("filelistbutton");
@@ -94,7 +94,7 @@ const dragOverPage = function (e) {
 }
 
 const drop = function (e) {
-    console.log("DROP")
+    // console.log("DROP")
     e.stopPropagation();
     e.preventDefault();
     resetButton();
