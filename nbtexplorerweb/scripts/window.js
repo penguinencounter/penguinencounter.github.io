@@ -249,3 +249,28 @@ const reloadAllHandlers = function() {
     reloadHandlersDrag();
     console.info("Registering event handlers ... Done.");
 }
+
+
+
+
+/**
+ *  API here...
+**/
+
+
+class WindowFactory {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.nextuid = 1;
+        this.uidprefix = "w";
+    }
+    create(uid) {
+
+    }
+    set uid(prefixnext) {
+            
+    }
+}
