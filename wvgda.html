@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Westview Game Design</title>
+    <style>
+        #main {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        window.addEventListener("load", () => {
+            document.getElementById("main").addEventListener("load", e => {
+                document.getElementById("main").src = document.getElementById("main").src
+            })
+        })
+    </script>
+</head>
+<body>
+    <iframe id="main" src="https://docs.google.com/forms/d/e/1FAIpQLSe6zhslJ-TOcG2h0DEURUzhSkIcpxaP3Uk4ReX8PYGS4wFfHw/viewform"></iframe>
+</body>
+</html>
