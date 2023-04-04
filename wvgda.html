@@ -20,8 +20,13 @@
         }
     </style>
     <script>
+        let last = 0
         window.addEventListener("load", () => {
             document.getElementById("main").addEventListener("load", e => {
+                let current = Date.now();
+                if (current - last < 3) return;
+                console.info("reload")
+                last = current;
                 document.getElementById("main").src = document.getElementById("main").src
             })
         })
