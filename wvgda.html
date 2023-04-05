@@ -18,6 +18,16 @@
             margin: 0;
             overflow: hidden;
         }
+        #notif {
+            position: fixed;
+            top: max(5vh, 150px);
+            right: 0;
+            width: max-content;
+            padding: 10px 10px 50px 10px;
+            background-color: #222;
+            border: 2px solid #fb0;
+            color: #fb0;
+        }
     </style>
     <script>
         let last = 0
@@ -33,6 +43,7 @@
     </script>
 </head>
 <body>
+    <div id="notif">Reloaded</div>
     <iframe id="main" src="https://docs.google.com/forms/d/e/1FAIpQLSe6zhslJ-TOcG2h0DEURUzhSkIcpxaP3Uk4ReX8PYGS4wFfHw/viewform"></iframe>
 </body>
 </html>
