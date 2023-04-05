@@ -20,30 +20,81 @@
         }
         #notif {
             position: fixed;
-            top: max(5vh, 150px);
-            right: 0;
+            display: block;
+            top: max(2vh, 50px);
+            right: -100%;
             width: max-content;
-            padding: 10px 10px 50px 10px;
+            padding: 10px 50px 10px 10px;
             background-color: #222;
-            border: 2px solid #fb0;
-            color: #fb0;
+            border: 2px solid #888;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family: sans-serif;
+            height: max-content;
+            color: #888;
+            
+            opacity: 100%;
+        }
+
+        #notif.anim {
+            right: -5px;
+            animation-delay: 3s, 0s, 0s;
+            animation-fill-mode: forwards, none, forwards;
+            animation-name: slide-off, slide-on, fade-color;
+            animation-duration: 2s, 1s, 3s;
+            animation-timing-function: ease-in, ease-out, linear;
+        }
+
+        @keyframes fade-color {
+            from {
+                border: 2px solid #fb0;
+                color: #fb0;
+            }
+            to {
+                border: 2px solid #888;
+                color: #888;
+            }
+        }
+
+        @keyframes slide-on {
+            from {
+                right: -100%;
+            }
+            to {
+                right: -5px;
+            }
+        }
+
+        @keyframes slide-off {
+            from {
+                right: -5px;
+            }
+            to {
+                right: -100%;
+            }
         }
     </style>
     <script>
-        let last = 0
+        let last = 0;
+        let timeCancel = null;
         window.addEventListener("load", () => {
             document.getElementById("main").addEventListener("load", e => {
                 let current = Date.now();
                 if (current - last < 3000) return;
                 console.info("reload")
                 last = current;
+                document.getElementById("notif").classList.remove("anim")
+                // force a reflow
+                void document.body.clientHeight;
+                document.getElementById("notif").classList.add("anim")
+                if (timeCancel) clearTimeout(timeCancel)
                 document.getElementById("main").src = document.getElementById("main").src
             })
         })
     </script>
 </head>
 <body>
-    <div id="notif">Reloaded</div>
+    <div id="notif" class="anim">Reloaded</div>
     <iframe id="main" src="https://docs.google.com/forms/d/e/1FAIpQLSe6zhslJ-TOcG2h0DEURUzhSkIcpxaP3Uk4ReX8PYGS4wFfHw/viewform"></iframe>
 </body>
 </html>
