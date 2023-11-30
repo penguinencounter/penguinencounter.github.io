@@ -13,18 +13,12 @@ body {
     color: #ffffff;
 }
 
-.linktarget {
+.linktarget, .linktarget:visited {
     color: #80d0d0;
     transition: color 0.25s ease-in-out;
 }
 .linktarget:hover, .linktarget:active {
     color: #60b0b0;
-}
-.linktarget:visited {
-    color: #d080d0;
-}
-.linktarget:visited:hover, .linktarget:visited:active {
-    color: #b060b0;
 }
 
 div {
