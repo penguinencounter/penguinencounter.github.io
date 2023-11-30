@@ -35,14 +35,14 @@ body {
     font-size: 0.80rem;
 }
 
-.linktarget,
-.linktarget:visited {
+a,
+a:visited {
     color: #80d0d0;
     transition: color 0.25s ease-in-out;
 }
 
-.linktarget:hover,
-.linktarget:active {
+a:hover,
+a:active {
     color: #60b0b0;
 }
 
