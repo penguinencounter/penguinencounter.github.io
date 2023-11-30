@@ -48,7 +48,7 @@ jobs:
       - name: Build TypeScript
         run: npx tsc
       - name: Run packager
-        run: python packager.py deploy
+        run: python packaging.py deploy
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
