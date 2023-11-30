@@ -44,6 +44,12 @@ button.clear-caches {
     color: #ffffff;
     opacity: 75%;
     transition: opacity 0.25s ease-in-out;
+    font-size: 1rem;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0;
+    background: transparent;
 }
 button.clear-caches:hover {
     opacity: 100%;
