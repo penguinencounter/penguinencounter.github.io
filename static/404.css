@@ -15,6 +15,7 @@ body {
 
 .linktarget {
     color: #80d0d0;
+    transition: color 0.25s ease-in-out;
 }
 .linktarget:hover, .linktarget:active {
     color: #60b0b0;
