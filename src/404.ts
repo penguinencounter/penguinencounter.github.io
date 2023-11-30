@@ -15,6 +15,8 @@ window.addEventListener('load', async () => {
     if (path.length != 1) return // TODO do something specific...
     const repoExists = await doesProjectExist(path[0])
     if (repoExists) {
-        
+        document.querySelectorAll('.repo-exists').forEach(x => x.classList.remove('hidden'))
+        document.querySelectorAll('.repo-not-exists').forEach(x => x.classList.add('hidden'))
+        ;(document.querySelectorAll('a.linktarget') as NodeListOf<HTMLAnchorElement>).forEach(x => x.href = `https://github.com/penguinencounter/${path[0]}`)
     }
 })

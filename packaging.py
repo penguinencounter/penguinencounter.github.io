@@ -5,6 +5,7 @@ import glob
 
 copies = [
     'dist',
+    'static',
     'LICENSE',
     *glob.glob('*.html'),
 ]
