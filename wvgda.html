@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Westview Game Design</title>
+    <style>
+        #main {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        #notif {
+            position: fixed;
+            display: block;
+            top: max(2vh, 50px);
+            right: -100%;
+            width: max-content;
+            padding: 10px 50px 10px 10px;
+            background-color: #ccc;
+            border: 2px solid #888;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family: sans-serif;
+            height: max-content;
+            color: #888;
+            
+            opacity: 100%;
+        }
+
+        #notif.anim {
+            right: -5px;
+            animation-delay: 3s, 0s, 0s;
+            animation-fill-mode: forwards, none, forwards;
+            animation-name: slide-off, slide-on, fade-color;
+            animation-duration: 2s, 1s, 3s;
+            animation-timing-function: ease-in, ease-out, linear;
+        }
+
+        @keyframes fade-color {
+            from {
+                border: 2px solid #f0f;
+                color: #f0f;
+                background-color: #fbf;
+            }
+            to {
+                border: 2px solid #888;
+                color: #888;
+                background-color: #ccc;
+            }
+        }
+
+        @keyframes slide-on {
+            from {
+                right: -100%;
+            }
+            to {
+                right: -5px;
+            }
+        }
+
+        @keyframes slide-off {
+            from {
+                right: -5px;
+            }
+            to {
+                right: -100%;
+            }
+        }
+
+        #icon {
+            position: fixed;
+            width: max-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: max-content;
+            font-family: monospace;
+            font-size: 1.4em;
+            top: 0;
+            left: 5vw;
+            padding: 10px 20px;
+            border-radius: 0 0 10px 10px;
+            background-color: #bbd;
+            color: #909;
+            text-decoration: none;
+            transition: color 0.2s linear;
+        }
+        #icon::before {
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            position: absolute;
+            content: "Quit kiosk mode";
+            text-decoration: underline;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: transparent;
+            font-weight: bold;
+            transition: color 0.2s linear;
+        }
+        #icon:hover::before {
+            color: #000;
+        }
+        #icon:hover {
+            color: transparent
+        }
+
+        #icon .subtext {
+            font-size: 0.8em;
+            font-weight: normal;
+            color: #959;
+            transition: color 0.2s linear;
+        }
+        #icon:hover .subtext {
+            color: transparent;
+        }
+    </style>
+    <script>
+        let last = 0;
+        let timeCancel = null;
+        window.addEventListener("load", () => {
+            document.getElementById("main").addEventListener("load", e => {
+                let current = Date.now();
+                if (current - last < 3000) return;
+                console.info("reload")
+                last = current;
+                document.getElementById("notif").classList.remove("anim")
+                // force a reflow
+                void document.body.clientHeight;
+                document.getElementById("notif").classList.add("anim")
+                if (timeCancel) clearTimeout(timeCancel)
+                document.getElementById("main").src = document.getElementById("main").src
+            })
+        })
+    </script>
+</head>
+<body>
+    <a id="icon" href="https://docs.google.com/forms/d/e/1FAIpQLSe6zhslJ-TOcG2h0DEURUzhSkIcpxaP3Uk4ReX8PYGS4wFfHw/viewform"><div>Kiosk mode active</div><div class="subtext">wvgdkiosk</div></a>
+    <div id="notif" class="anim">Reloaded</div>
+    <iframe id="main" src="https://docs.google.com/forms/d/e/1FAIpQLSe6zhslJ-TOcG2h0DEURUzhSkIcpxaP3Uk4ReX8PYGS4wFfHw/viewform"></iframe>
+</body>
+</html>
