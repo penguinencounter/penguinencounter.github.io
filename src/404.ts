@@ -35,7 +35,11 @@ async function doesProjectExist(name: string): Promise<SearchResult> {
 window.addEventListener('load', async () => {
     repoCache = JSON.parse(sessionStorage.getItem('repoExistsCache')!) || {}
     const path = window.location.pathname.split('/').filter(x => x != '')
-    if (path.length != 1) return // TODO do something specific...
+    if (path.length != 1) {
+        document.querySelectorAll('.not-sure').forEach(x => x.classList.add('hidden'))
+        document.querySelectorAll('.repo-not-exists').forEach(x => x.classList.remove('hidden'))
+        return;
+    }
     const repoExists = await doesProjectExist(path[0])
     document.querySelectorAll('.not-sure').forEach(x => x.classList.add('hidden'))
     if (repoExists.type == SearchResultT.exists) {
