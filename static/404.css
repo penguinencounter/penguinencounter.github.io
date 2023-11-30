@@ -15,6 +15,26 @@ body {
     color: #ffffff;
 }
 
+@keyframes pulse {
+    from {
+        opacity: 100%;
+    }
+    50% {
+        opacity: 50%;
+    }
+    to {
+        opacity: 100%;
+    }
+}
+
+.not-sure {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.small {
+    font-size: 0.80rem;
+}
+
 .linktarget,
 .linktarget:visited {
     color: #80d0d0;
