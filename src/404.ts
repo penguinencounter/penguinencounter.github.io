@@ -47,4 +47,9 @@ window.addEventListener('load', async () => {
         ;(document.querySelectorAll('a.linktarget') as NodeListOf<HTMLAnchorElement>).forEach(x => x.href = `/${repoExists.rename}`)
         document.querySelectorAll('a.linkvalue').forEach(x => x.innerHTML = `${repoExists.rename}`)
     }
+
+    document.querySelectorAll('.clear-caches').forEach(element => element.addEventListener('click', ev => {
+        sessionStorage.removeItem('repoExistsCache')
+        document.location.reload()
+    }));
 })

@@ -34,3 +34,17 @@ div {
 .hidden {
     display: none;
 }
+
+button.clear-caches {
+    display: block;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    text-decoration: underline;
+    color: #ffffff;
+    opacity: 75%;
+    transition: opacity 0.25s ease-in-out;
+}
+button.clear-caches:hover {
+    opacity: 100%;
+}
