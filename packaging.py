@@ -46,6 +46,10 @@ def sizeof_remote(url: str) -> int:
     return len(response.content)
 
 
+HTML_IMG_NOCOPY = ["class", "id"]
+HTML_IMG_NODELETE = ["alt"]
+
+
 def process_HTMLs(path: str, out_path: str):
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -63,9 +67,7 @@ def process_HTMLs(path: str, out_path: str):
             print(f"[ImageProc] I: skipping data url")
             continue
         if routing.startswith("http://"):
-            print(
-                f"[ImageProc] W: remote insecure (http:) url may cause mixed content errors"
-            )
+            print(f"[ImageProc] W: remote insecure (http:) url may cause mixed content errors")
             size = sizeof_remote(routing)
         elif routing.startswith("https://"):
             size = sizeof_remote(routing)
@@ -76,6 +78,25 @@ def process_HTMLs(path: str, out_path: str):
             else:
                 route_path = relative_root / route_path
             size = sizeof_local(str(route_path))
+
+        for attr in image.attrs.copy():
+            if attr in HTML_IMG_NOCOPY:
+                continue
+            image[f"data-img-{attr}"] = image[attr]
+            if attr not in HTML_IMG_NODELETE:
+                del image[attr]
+
+        image.name = "span"
+        # HACK: Ewwww, undocumented properties! It works though...
+        image.can_be_empty_element = False
+
+        image_classes = image["class"] if "class" in image.attrs else []
+        if isinstance(image_classes, str):
+            print(f"[ImageProc] W: class: multivalue failure on {image}")
+        else:
+            image_classes.append("replaced-image")
+            image["class"] = image_classes
+
         image["data-content-size"] = str(size)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
