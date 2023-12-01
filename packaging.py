@@ -3,7 +3,7 @@ import glob
 import os
 import shutil
 from functools import lru_cache
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from time import sleep
 
 from bs4 import BeautifulSoup, Tag
@@ -72,7 +72,7 @@ def process_HTMLs(path: str, out_path: str):
         elif routing.startswith("https://"):
             size = sizeof_remote(routing)
         else:
-            route_path = Path(routing)
+            route_path = PurePosixPath(routing)
             if route_path.is_absolute():
                 route_path = root_is / route_path.relative_to("/")
             else:
