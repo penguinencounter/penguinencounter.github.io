@@ -1,12 +1,15 @@
 import argparse
 import glob
+from io import BytesIO
 import os
 import shutil
 from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from time import sleep
+from typing import Tuple
 
 from bs4 import BeautifulSoup, Tag
+from PIL import Image, UnidentifiedImageError
 from requests import get
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -20,17 +23,18 @@ matches = [
 
 
 @lru_cache
-def sizeof_local(path: str) -> int:
+def sizeof_local(path: str) -> Tuple[int, bytes]:
     if os.path.exists(path):
         with open(path, "rb") as f:
-            return len(f.read())
+            data = f.read()
+            return len(f.read()), data
     else:
         print(f"[sizeof_local] W: skipping missing image at {path}")
-        return -1
+        return -1, b''
 
 
 @lru_cache
-def sizeof_remote(url: str) -> int:
+def sizeof_remote(url: str) -> Tuple[int, bytes]:
     print(f"[sizeof_remote] I: {url}")
     response = get(
         url,
@@ -42,12 +46,13 @@ def sizeof_remote(url: str) -> int:
     )
     if response.status_code != 200:
         print(f"[sizeof_remote] W: request failed, status {response.status_code}")
-        return -1
-    return len(response.content)
+        return -1, b''
+    cont = response.content
+    return len(cont), cont
 
 
-HTML_IMG_NOCOPY = ["class", "id"]
-HTML_IMG_NODELETE = ["alt"]
+HTML_IMG_NOCOPY = []
+HTML_IMG_NODELETE = ["alt", "class", "id"]
 
 
 def process_HTMLs(path: str, out_path: str):
@@ -68,16 +73,16 @@ def process_HTMLs(path: str, out_path: str):
             continue
         if routing.startswith("http://"):
             print(f"[ImageProc] W: remote insecure (http:) url may cause mixed content errors")
-            size = sizeof_remote(routing)
+            size, data = sizeof_remote(routing)
         elif routing.startswith("https://"):
-            size = sizeof_remote(routing)
+            size, data = sizeof_remote(routing)
         else:
             route_path = PurePosixPath(routing)
             if route_path.is_absolute():
                 route_path = root_is / route_path.relative_to("/")
             else:
                 route_path = relative_root / route_path
-            size = sizeof_local(str(route_path))
+            size, data = sizeof_local(str(route_path))
 
         for attr in image.attrs.copy():
             if attr in HTML_IMG_NOCOPY:
@@ -85,6 +90,20 @@ def process_HTMLs(path: str, out_path: str):
             image[f"data-img-{attr}"] = image[attr]
             if attr not in HTML_IMG_NODELETE:
                 del image[attr]
+        
+        try:
+            # extract more metadata to assist user choices before sending entire file
+            bio = BytesIO(data)
+            image_data = Image.open(bio)
+            image_data.load()
+            xsize = f'{image_data.width}x{image_data.height}'
+            print(f"[ImageProc] I: {routing} is a {xsize} {image_data.format}, {image_data.mode} colors")
+            image["data-width"] = str(image_data.width)
+            image["data-height"] = str(image_data.height)
+            image["data-format"] = str(image_data.format)
+            bio.close()
+        except UnidentifiedImageError:
+            print(f"[ImageProc] W: unidentified image at {routing}")
 
         image.name = "span"
         # HACK: Ewwww, undocumented properties! It works though...
