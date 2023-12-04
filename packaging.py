@@ -105,7 +105,7 @@ def process_HTMLs(path: str, out_path: str):
             image["data-format"] = str(image_data.format)
             request_width = image["width"] if "width" in image.attrs else None
             request_height = image["height"] if "height" in image.attrs else None
-            if isinstance(request_width, str) and isinstance(request_height, str):
+            if (isinstance(request_width, str) or request_width is None) and (isinstance(request_height, str) or request_height is None):
                 if request_width is not None and request_height is not None:
                     image["style"] = (
                         f"--replaced-image-width: {request_width}px; "
@@ -114,13 +114,13 @@ def process_HTMLs(path: str, out_path: str):
                 elif request_width is not None:
                     fraction = float(request_width) / image_data.width
                     image["style"] = (
-                        f"--replaced-image-width {int(float(request_width))}px; "
-                        f"--replaced-image-height: {int(float(request_height) * fraction)}px;"
+                        f"--replaced-image-width: {int(float(request_width))}px; "
+                        f"--replaced-image-height: {int(float(image_data.height) * fraction)}px;"
                     )
                 elif request_height is not None:
                     fraction = float(request_height) / image_data.height
                     image["style"] = (
-                        f"--replaced-image-width {int(float(request_width) * fraction)}px; "
+                        f"--replaced-image-width: {int(float(image_data.width) * fraction)}px; "
                         f"--replaced-image-height: {int(float(request_height))}px;"
                     )
             bio.close()
