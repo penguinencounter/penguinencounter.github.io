@@ -101,6 +101,7 @@ def process_HTMLs(path: str, out_path: str):
             image["data-width"] = str(image_data.width)
             image["data-height"] = str(image_data.height)
             image["data-format"] = str(image_data.format)
+            image["style"] = f'--replaced-image-width: {image_data.width}px; --replaced-image-height: {image_data.height}px;'
             bio.close()
         except UnidentifiedImageError:
             print(f"[ImageProc] W: unidentified image at {routing}")
