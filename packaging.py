@@ -1,9 +1,9 @@
 import argparse
 import glob
-from io import BytesIO
 import os
 import shutil
 from functools import lru_cache
+from io import BytesIO
 from pathlib import Path, PurePosixPath
 from time import sleep
 from typing import Tuple
@@ -30,7 +30,7 @@ def sizeof_local(path: str) -> Tuple[int, bytes]:
             return len(f.read()), data
     else:
         print(f"[sizeof_local] W: skipping missing image at {path}")
-        return -1, b''
+        return -1, b""
 
 
 @lru_cache
@@ -46,7 +46,7 @@ def sizeof_remote(url: str) -> Tuple[int, bytes]:
     )
     if response.status_code != 200:
         print(f"[sizeof_remote] W: request failed, status {response.status_code}")
-        return -1, b''
+        return -1, b""
     cont = response.content
     return len(cont), cont
 
@@ -90,18 +90,39 @@ def process_HTMLs(path: str, out_path: str):
             image[f"data-img-{attr}"] = image[attr]
             if attr not in HTML_IMG_NODELETE:
                 del image[attr]
-        
+
         try:
             # extract more metadata to assist user choices before sending entire file
             bio = BytesIO(data)
             image_data = Image.open(bio)
             image_data.load()
-            xsize = f'{image_data.width}x{image_data.height}'
-            print(f"[ImageProc] I: {routing} is a {xsize} {image_data.format}, {image_data.mode} colors")
+            xsize = f"{image_data.width}x{image_data.height}"
+            print(
+                f"[ImageProc] I: {routing} is a {xsize} {image_data.format}, {image_data.mode} colors"
+            )
             image["data-width"] = str(image_data.width)
             image["data-height"] = str(image_data.height)
             image["data-format"] = str(image_data.format)
-            image["style"] = f'--replaced-image-width: {image_data.width}px; --replaced-image-height: {image_data.height}px;'
+            request_width = image["width"] if "width" in image.attrs else None
+            request_height = image["height"] if "height" in image.attrs else None
+            if isinstance(request_width, str) and isinstance(request_height, str):
+                if request_width is not None and request_height is not None:
+                    image["style"] = (
+                        f"--replaced-image-width: {request_width}px; "
+                        f"--replaced-image-height: {request_height}px;"
+                    )
+                elif request_width is not None:
+                    fraction = float(request_width) / image_data.width
+                    image["style"] = (
+                        f"--replaced-image-width {int(float(request_width))}px; "
+                        f"--replaced-image-height: {int(float(request_height) * fraction)}px;"
+                    )
+                elif request_height is not None:
+                    fraction = float(request_height) / image_data.height
+                    image["style"] = (
+                        f"--replaced-image-width {int(float(request_width) * fraction)}px; "
+                        f"--replaced-image-height: {int(float(request_height))}px;"
+                    )
             bio.close()
         except UnidentifiedImageError:
             print(f"[ImageProc] W: unidentified image at {routing}")
