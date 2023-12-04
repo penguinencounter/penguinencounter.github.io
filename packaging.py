@@ -52,7 +52,7 @@ def sizeof_remote(url: str) -> Tuple[int, bytes]:
 
 
 HTML_IMG_NOCOPY = []
-HTML_IMG_NODELETE = ["alt", "class", "id"]
+HTML_IMG_NODELETE = ["alt", "class", "id", "width", "height"]
 
 
 def process_HTMLs(path: str, out_path: str):

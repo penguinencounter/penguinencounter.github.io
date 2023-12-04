@@ -1,8 +1,6 @@
 .replaced-image {
     display: inline-block;
-    background: linear-gradient(135deg, #ff8080 0%, transparent 20%, transparent 100%);
-    width: var(--replaced-image-width);
-    height: var(--replaced-image-height);
+    background: linear-gradient(-35deg, #ff8080 0%, transparent 20%, transparent 100%), #101010;
     border-radius: 20px;
     overflow: hidden;
 }
