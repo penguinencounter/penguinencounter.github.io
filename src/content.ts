@@ -2,6 +2,8 @@
 
 ; (function () {
     const autoloadSize = 100000  // automatically load content less than 100 kb
+
+    const APPLY_TAG = "content-replacement-stats-applied"
     function assert(yes: boolean, message?: string) {
         if (!yes) {
             if (message)
@@ -21,6 +23,10 @@
         templateElement.replaceWith(dataTarget)
     }
 
+    function statImage(templateElement: HTMLElement) {
+        
+    }
+
     const observeOptions: MutationObserverInit = {
         childList: true,
         subtree: true
@@ -30,17 +36,28 @@
         document.querySelectorAll(".replaced").forEach(e => {
             if (e instanceof HTMLElement) {
                 assert('contentSize' in e.dataset)
-                if (parseInt(e.dataset.contentSize!) > autoloadSize) {
-                    return
-                }
                 assert('replacementType' in e.dataset)
-                switch (e.dataset.replacementType) {
-                    case "img":
-                        loadReplacedImage(e)
-                        break
-                    default:
-                        console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
-                        break
+                if (parseInt(e.dataset.contentSize!) <= autoloadSize) {
+                    // load the content now
+                    switch (e.dataset.replacementType) {
+                        case "img":
+                            loadReplacedImage(e)
+                            break
+                        default:
+                            console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
+                            break
+                    }
+                } else {
+                    if (e.classList.contains(APPLY_TAG)) return
+                    // display stats
+                    switch (e.dataset.replacementType) {
+                        case "img":
+                            statImage(e)
+                            break
+                        default:
+                            console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
+                            break
+                    }
                 }
             }
         })
