@@ -3,3 +3,4 @@ node_modules/
 deploy/
 dist/
 venv/
+__pycache__/

@@ -100,6 +100,7 @@ def process_HTMLs(path: str, out_path: str):
             print(
                 f"[ImageProc] I: {routing} is a {xsize} {image_data.format}, {image_data.mode} colors"
             )
+            image["data-replacement-type"] = "img"
             image["data-width"] = str(image_data.width)
             image["data-height"] = str(image_data.height)
             image["data-format"] = str(image_data.format)
@@ -135,6 +136,7 @@ def process_HTMLs(path: str, out_path: str):
         if isinstance(image_classes, str):
             print(f"[ImageProc] W: class: multivalue failure on {image}")
         else:
+            image_classes.append("replaced")
             image_classes.append("replaced-image")
             image["class"] = image_classes
 
