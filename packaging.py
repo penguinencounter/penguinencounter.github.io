@@ -2,6 +2,7 @@ import argparse
 import glob
 import os
 import shutil
+import copy
 from functools import lru_cache
 from io import BytesIO
 from pathlib import Path, PurePosixPath
@@ -27,7 +28,7 @@ def sizeof_local(path: str) -> Tuple[int, bytes]:
     if os.path.exists(path):
         with open(path, "rb") as f:
             data = f.read()
-            return len(f.read()), data
+            return len(data), data
     else:
         print(f"[sizeof_local] W: skipping missing image at {path}")
         return -1, b""
@@ -83,11 +84,12 @@ def process_HTMLs(path: str, out_path: str):
             else:
                 route_path = relative_root / route_path
             size, data = sizeof_local(str(route_path))
+            print(f"[ImageProc] D: calculating image size by {route_path}: {size}")
 
         for attr in image.attrs.copy():
             if attr in HTML_IMG_NOCOPY:
                 continue
-            image[f"data-img-{attr}"] = image[attr]
+            image[f"data-img-{attr}"] = copy.copy(image[attr])
             if attr not in HTML_IMG_NODELETE:
                 del image[attr]
 
@@ -106,7 +108,9 @@ def process_HTMLs(path: str, out_path: str):
             image["data-format"] = str(image_data.format)
             request_width = image["width"] if "width" in image.attrs else None
             request_height = image["height"] if "height" in image.attrs else None
-            if (isinstance(request_width, str) or request_width is None) and (isinstance(request_height, str) or request_height is None):
+            if (isinstance(request_width, str) or request_width is None) and (
+                isinstance(request_height, str) or request_height is None
+            ):
                 if request_width is not None and request_height is not None:
                     image["style"] = (
                         f"--replaced-image-width: {request_width}px; "
