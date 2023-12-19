@@ -1,3 +1,6 @@
+.replaced {
+    position: relative;
+}
 .replaced-image {
     display: inline-block;
     background: #201040;
@@ -5,7 +8,6 @@
     height: var(--replaced-image-height);
     border-radius: 20px;
     overflow: hidden;
-    position: relative;
 }
 
 .replaced-image::after {
@@ -21,4 +23,25 @@
     color: #ffffff;
     font-style: italic;
     font-size: 1rem;
+}
+
+.replaced .replaced-info {
+    color: #b080ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.replaced .replaced-info ._size {
+    font-size: 2.5rem;
+}
+
+.replaced .replaced-info ._isize {
+    font-size: 1.25rem;
 }

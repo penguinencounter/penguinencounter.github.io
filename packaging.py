@@ -92,6 +92,8 @@ def process_HTMLs(path: str, out_path: str):
             image[f"data-img-{attr}"] = copy.copy(image[attr])
             if attr not in HTML_IMG_NODELETE:
                 del image[attr]
+    
+        image["data-replacement-type"] = "img"
 
         try:
             # extract more metadata to assist user choices before sending entire file
@@ -102,7 +104,6 @@ def process_HTMLs(path: str, out_path: str):
             print(
                 f"[ImageProc] I: {routing} is a {xsize} {image_data.format}, {image_data.mode} colors"
             )
-            image["data-replacement-type"] = "img"
             image["data-width"] = str(image_data.width)
             image["data-height"] = str(image_data.height)
             image["data-format"] = str(image_data.format)
