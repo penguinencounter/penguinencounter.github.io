@@ -2,8 +2,10 @@
 
 ; (function () {
     const autoloadSize = 50000  // automatically load content less than 50 kb
+    // const autoloadSize = 50000000  // automatically load content less than 50 mb
 
     const APPLY_TAG = "content-replacement-stats-applied"
+    const CR_USED_TAG = "content-replacement-used"
     function assert(yes: boolean, message?: string) {
         if (!yes) {
             if (message)
@@ -71,7 +73,9 @@
     }
 
     function loadReplacedImage(templateElement: HTMLElement) {
-        // freeze the current size of the element
+        if (templateElement.classList.contains(CR_USED_TAG)) return // here we go again
+        // freeze the current size of the element, prevent recursion issues
+        templateElement.classList.add(CR_USED_TAG)
 
         const dataTarget = document.createElement("img")
         let source: string | null = null
@@ -153,6 +157,36 @@
         subtree: true
     } as const
 
+    function tag(e: HTMLElement, loadImmediate: boolean = false) {
+        if (e.classList.contains(APPLY_TAG)) return
+        const dataContainer = document.createElement("div")
+        dataContainer.classList.add("replaced-info")
+        // display stats
+        switch (e.dataset.replacementType) {
+            case "img":
+                statImage(e, dataContainer)
+                break
+            default:
+                console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
+                break
+        }
+
+        const c2a = document.createElement("div")
+        c2a.classList.add("_c2a")
+        c2a.innerText = "Click to load"  // TODO: i18n
+        dataContainer.appendChild(c2a)
+
+        e.appendChild(dataContainer)
+        e.classList.add(APPLY_TAG)
+
+        if (!loadImmediate) {
+            e.addEventListener("click", function k(ev) {
+                this.removeEventListener("click", k)
+                load(e)
+            })
+        }
+    }
+
     function load(e: HTMLElement) {
         assert('replacementType' in e.dataset)
         switch (e.dataset.replacementType) {
@@ -165,42 +199,25 @@
         }
     }
 
+    let isRefreshInProgress = false
+
     function processMedia() {
+        if (isRefreshInProgress) return // prevent recursion from mutation observer when we replace the content
+        isRefreshInProgress = true
         document.querySelectorAll(".replaced").forEach(e => {
             if (e instanceof HTMLElement) {
                 assert('contentSize' in e.dataset)
                 assert('replacementType' in e.dataset)
                 if (parseInt(e.dataset.contentSize!) <= autoloadSize) {
                     // load the content now
+                    tag(e, true)
                     load(e)
                 } else {
-                    if (e.classList.contains(APPLY_TAG)) return
-                    const dataContainer = document.createElement("div")
-                    dataContainer.classList.add("replaced-info")
-                    // display stats
-                    switch (e.dataset.replacementType) {
-                        case "img":
-                            statImage(e, dataContainer)
-                            break
-                        default:
-                            console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
-                            break
-                    }
-
-                    const c2a = document.createElement("div")
-                    c2a.classList.add("_c2a")
-                    c2a.innerText = "Click to load"  // TODO: i18n
-                    dataContainer.appendChild(c2a)
-
-                    e.appendChild(dataContainer)
-                    e.classList.add(APPLY_TAG)
-
-                    e.addEventListener("click", (ev) => {
-                        load(e)
-                    })
+                    tag(e, false)
                 }
             }
         })
+        isRefreshInProgress = false
     }
 
     const observeCallback: MutationCallback = (mutationList, observer) => {
