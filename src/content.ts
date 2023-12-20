@@ -13,6 +13,53 @@
         }
     }
 
+    async function progFetch(target: URL | RequestInfo, options: {
+        fetchopt?: RequestInit,
+        progress?: ((read: number, total: number | null) => Promise<boolean>)
+    }) {
+        const callback = options.progress || (async (_1, _2) => true)
+        const collect = new Uint8Array()
+        const resp = await fetch(target, options.fetchopt)
+
+        let total_ = resp.headers.get('Content-Length')
+        let total: number | null
+        if (total_ != null) total = parseInt(total_)
+        else total = null
+
+        if (resp.body == null) return await resp.blob()
+
+        async function readAll(strm: ReadableStream<Uint8Array>) {
+            const reader = strm.getReader()
+            const chunks: Uint8Array[] = []
+
+            let recieved = 0
+
+            let value: Uint8Array | undefined, done: boolean
+            while (true) {
+                ({value, done} = await reader.read())
+                if (done) {
+                    return chunks
+                }
+                chunks.push(value!)
+                recieved += value!.length
+                if (!await callback(recieved, total)) {
+                    await strm.cancel()
+                    return chunks
+                }
+            }
+        }
+
+        const chunkedData = await readAll(resp.body)
+        // collect all the data together into a Blob
+        const data = new Uint8Array(chunkedData.reduce((acc, cur) => acc + cur.length, 0))
+        let offset = 0
+        for (const chunk of chunkedData) {
+            data.set(chunk, offset)
+            offset += chunk.length
+        }
+        return new Blob([data])
+    }
+
     function siBytes(bytes: number) {
         const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]
         let unitIndex = 0
@@ -27,22 +74,60 @@
         // freeze the current size of the element
 
         const dataTarget = document.createElement("img")
+        let source: string | null = null
         for (const key of templateElement.attributes) {
             if (!key.name.startsWith("data-img-")) continue
             const trueName = key.name.replace(/^data-img-/g, "")
-            dataTarget.setAttribute(trueName, key.value)
+            if (trueName.toLowerCase() == "src") {
+                source = key.value
+            } else {
+                dataTarget.setAttribute(trueName, key.value)
+            }
         }
+        if (source == null) throw Error("image has no source???")
+        // is the source already data:...?
         const fin = () => templateElement.replaceWith(dataTarget)
+        if (source.startsWith("data:")) {
+            dataTarget.src = source
+            fin()
+            return
+        }
         const callto = templateElement.querySelector(".replaced-info ._c2a")
         if (callto instanceof HTMLElement) {
             callto.innerText = "Loading..."
-        }
-        if (dataTarget.complete) {
-            fin()
         } else {
-            dataTarget.addEventListener("load", fin)
-            dataTarget.addEventListener("error", fin)
+            console.warn("no c2a element?")
         }
+
+        // do the request in the background
+        progFetch(source, {
+            progress: async (read, total) => {
+                if (total == null) {
+                    if (callto instanceof HTMLElement) {
+                        callto.innerText = `${siBytes(read)} recieved`
+                    }
+                } else {
+                    const percentage = Math.floor((read / total) * 100)
+                    if (callto instanceof HTMLElement) {
+                        if (percentage == 100) callto.innerText = "Download finishing..."
+                        else callto.innerText = `${siBytes(read)} / ${siBytes(total)} ${percentage}%`
+                    }
+                }
+                return true
+            }
+        }).then(async (blob) => {
+            dataTarget.src = URL.createObjectURL(blob)
+            if (callto instanceof HTMLElement) {
+                callto.innerText = "Preparing image"
+            }
+            await dataTarget.decode()
+            fin()
+        }).catch((err) => {
+            console.error(err)
+            if (callto instanceof HTMLElement) {
+                callto.innerText = "Failed to load"
+            }
+        })
     }
 
     function statImage(source: HTMLElement, templateElement: HTMLElement) {
