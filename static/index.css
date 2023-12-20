@@ -3,7 +3,7 @@ body {
     justify-content: center;
 }
 
-main {
+.main_container {
     width: 100vw;
     max-width: 1000px;
     min-height: 100vh;
@@ -13,19 +13,19 @@ main {
     margin: 0;
 }
 
-main .banner {
+.banner {
     width: 100%;
     height: unset;
     aspect-ratio: var(--replaced-image-aspect, inherit);
     position: relative;
     z-index: 5;
 }
-main .content {
+main.content {
     z-index: 10;
     position: relative;
 }
 
-main .content ._above {
+main.content ._above {
     position: absolute;
     bottom: 100%;
     left: 0;
@@ -41,4 +41,8 @@ main .content ._above {
 
 header.banner-title {
     font-size: min(5rem, 10vw);
+}
+
+main.content ._main {
+    padding: 20px;
 }
