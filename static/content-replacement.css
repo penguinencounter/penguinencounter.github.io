@@ -6,7 +6,6 @@
     background: #201040;
     width: var(--replaced-image-width);
     height: var(--replaced-image-height);
-    border-radius: 20px;
     overflow: hidden;
 }
 
