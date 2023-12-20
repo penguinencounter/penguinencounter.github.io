@@ -2,11 +2,13 @@
     font-family: "Rubik";
     src: url("/static/Rubik-VariableFont_wght.ttf");
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
     font-family: "Rubik";
     src: url("/static/Rubik-Italic-VariableFont_wght.ttf");
     font-style: italic;
+    font-display: swap;
 }
 
 html, body {

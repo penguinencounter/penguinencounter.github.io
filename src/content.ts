@@ -24,11 +24,23 @@
     }
 
     function loadReplacedImage(templateElement: HTMLElement) {
+        // freeze the current size of the element
+
         const dataTarget = document.createElement("img")
+        dataTarget.style.setProperty("--frozen-width", `${templateElement.clientWidth}px`)
+        dataTarget.style.setProperty("--frozen-height", `${templateElement.clientHeight}px`)
+        dataTarget.classList.add("frozen")
         for (const key of templateElement.attributes) {
             if (!key.name.startsWith("data-img-")) continue
             const trueName = key.name.replace(/^data-img-/g, "")
             dataTarget.setAttribute(trueName, key.value)
+        }
+        const unfreeze = () => dataTarget.classList.remove("frozen")
+        if (dataTarget.complete) {
+            unfreeze()
+        } else {
+            dataTarget.addEventListener("load", unfreeze)
+            dataTarget.addEventListener("error", unfreeze)
         }
         templateElement.replaceWith(dataTarget)
     }
@@ -37,9 +49,9 @@
         const size = document.createElement("div")
         const sizeof = source.dataset.contentSize ? parseInt(source.dataset.contentSize) : 0
         if (sizeof > 0) {
-            size.innerText = siBytes(sizeof)
+            size.innerText = `${siBytes(sizeof)} image`
         } else {
-            size.innerText = "???B"
+            size.innerText = "???B image"
         }
         size.classList.add("_size")
         templateElement.appendChild(size)
@@ -110,7 +122,7 @@
         processMedia()
     }
 
-    window.addEventListener("load", () => {
+    window.addEventListener("DOMContentLoaded", () => {
         // initial loading pass...
         processMedia()
         // look to the future
