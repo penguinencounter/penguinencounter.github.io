@@ -1,7 +1,7 @@
 // Handles content replacement and data management.
 
 ; (function () {
-    const autoloadSize = 100000  // automatically load content less than 100 kb
+    const autoloadSize = 50000  // automatically load content less than 50 kb
 
     const APPLY_TAG = "content-replacement-stats-applied"
     function assert(yes: boolean, message?: string) {
@@ -56,6 +56,18 @@
         subtree: true
     } as const
 
+    function load(e: HTMLElement) {
+        assert('replacementType' in e.dataset)
+        switch (e.dataset.replacementType) {
+            case "img":
+                loadReplacedImage(e)
+                break
+            default:
+                console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
+                break
+        }
+    }
+
     function processMedia() {
         document.querySelectorAll(".replaced").forEach(e => {
             if (e instanceof HTMLElement) {
@@ -63,14 +75,7 @@
                 assert('replacementType' in e.dataset)
                 if (parseInt(e.dataset.contentSize!) <= autoloadSize) {
                     // load the content now
-                    switch (e.dataset.replacementType) {
-                        case "img":
-                            loadReplacedImage(e)
-                            break
-                        default:
-                            console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
-                            break
-                    }
+                    load(e)
                 } else {
                     if (e.classList.contains(APPLY_TAG)) return
                     const dataContainer = document.createElement("div")
@@ -84,8 +89,18 @@
                             console.warn(`unknown replacement type: ${e.dataset.replacementType}`)
                             break
                     }
+
+                    const c2a = document.createElement("div")
+                    c2a.classList.add("_c2a")
+                    c2a.innerText = "Click to load"  // TODO: i18n
+                    dataContainer.appendChild(c2a)
+
                     e.appendChild(dataContainer)
                     e.classList.add(APPLY_TAG)
+
+                    e.addEventListener("click", (ev) => {
+                        load(e)
+                    })
                 }
             }
         })

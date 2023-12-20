@@ -1,7 +1,18 @@
+@font-face {
+    font-family: "Rubik";
+    src: url("/static/Rubik-VariableFont_wght.ttf");
+    font-style: normal;
+}
+@font-face {
+    font-family: "Rubik";
+    src: url("/static/Rubik-Italic-VariableFont_wght.ttf");
+    font-style: italic;
+}
+
 html, body {
     margin: 0;
     min-height: 100vh;
     background-image: linear-gradient(-10deg, #252525 0%, #050505 80%, #150535 100%);
-    font-family: sans-serif;
+    font-family: "Rubik", sans-serif;
     font-size: 1rem;
 }

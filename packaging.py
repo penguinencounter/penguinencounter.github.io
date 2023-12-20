@@ -36,7 +36,7 @@ def sizeof_local(path: str) -> Tuple[int, bytes]:
 
 @lru_cache
 def sizeof_remote(url: str) -> Tuple[int, bytes]:
-    print(f"[sizeof_remote] I: {url}")
+    print(f"[sizeof_remote] I: requesting {url[:64]}...")
     response = get(
         url,
         timeout=0.5,
@@ -112,25 +112,28 @@ def process_HTMLs(path: str, out_path: str):
             if (isinstance(request_width, str) or request_width is None) and (
                 isinstance(request_height, str) or request_height is None
             ):
+                if "style" not in image.attrs:
+                    image["style"] = ""
+                image["style"] += f"--replaced-image-aspect: {image_data.width / image_data.height}; "
                 if request_width is not None and request_height is not None:
-                    image["style"] = (
+                    image["style"] += (
                         f"--replaced-image-width: {request_width}px; "
                         f"--replaced-image-height: {request_height}px;"
                     )
                 elif request_width is not None:
                     fraction = float(request_width) / image_data.width
-                    image["style"] = (
+                    image["style"] += (
                         f"--replaced-image-width: {int(float(request_width))}px; "
                         f"--replaced-image-height: {int(float(image_data.height) * fraction)}px;"
                     )
                 elif request_height is not None:
                     fraction = float(request_height) / image_data.height
-                    image["style"] = (
+                    image["style"] += (
                         f"--replaced-image-width: {int(float(image_data.width) * fraction)}px; "
                         f"--replaced-image-height: {int(float(request_height))}px;"
                     )
                 else:
-                    image["style"] = (
+                    image["style"] += (
                         f"--replaced-image-width: {int(float(image_data.width))}px; "
                         f"--replaced-image-height: {int(float(image_data.height))}px;"
                     )

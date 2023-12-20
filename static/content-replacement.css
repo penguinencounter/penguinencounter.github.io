@@ -45,3 +45,8 @@
 .replaced .replaced-info ._isize {
     font-size: 1.25rem;
 }
+
+.replaced .replaced-info ._c2a {
+    font-style: italic;
+    color: #80ffb0;
+}

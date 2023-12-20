@@ -1,0 +1,44 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+
+main {
+    width: 100vw;
+    max-width: 1000px;
+    min-height: 100vh;
+    background-color: #000000b0;
+    box-shadow: 0 0 16px #000000b0;
+    padding: 0;
+    margin: 0;
+}
+
+main .banner {
+    width: 100%;
+    height: unset;
+    aspect-ratio: var(--replaced-image-aspect, inherit);
+    position: relative;
+    z-index: 5;
+}
+main .content {
+    z-index: 10;
+    position: relative;
+}
+
+main .content ._above {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    padding-top: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 5px;
+    color: #b080ff;
+    box-sizing: border-box;
+    background-image: linear-gradient(0deg, #000000b0 0%, transparent 100%)
+}
+
+header.banner-title {
+    font-size: 5rem;
+}
