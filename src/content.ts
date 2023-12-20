@@ -29,12 +29,12 @@
         const dataTarget = document.createElement("img")
         dataTarget.style.setProperty("--frozen-width", `${templateElement.clientWidth}px`)
         dataTarget.style.setProperty("--frozen-height", `${templateElement.clientHeight}px`)
-        dataTarget.classList.add("frozen")
         for (const key of templateElement.attributes) {
             if (!key.name.startsWith("data-img-")) continue
             const trueName = key.name.replace(/^data-img-/g, "")
             dataTarget.setAttribute(trueName, key.value)
         }
+        dataTarget.classList.add("frozen")
         const unfreeze = () => dataTarget.classList.remove("frozen")
         if (dataTarget.complete) {
             unfreeze()
