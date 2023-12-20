@@ -27,22 +27,22 @@
         // freeze the current size of the element
 
         const dataTarget = document.createElement("img")
-        dataTarget.style.setProperty("--frozen-width", `${templateElement.clientWidth}px`)
-        dataTarget.style.setProperty("--frozen-height", `${templateElement.clientHeight}px`)
         for (const key of templateElement.attributes) {
             if (!key.name.startsWith("data-img-")) continue
             const trueName = key.name.replace(/^data-img-/g, "")
             dataTarget.setAttribute(trueName, key.value)
         }
-        dataTarget.classList.add("frozen")
-        const unfreeze = () => dataTarget.classList.remove("frozen")
-        if (dataTarget.complete) {
-            unfreeze()
-        } else {
-            dataTarget.addEventListener("load", unfreeze)
-            dataTarget.addEventListener("error", unfreeze)
+        const fin = () => templateElement.replaceWith(dataTarget)
+        const callto = templateElement.querySelector(".replaced-info ._c2a")
+        if (callto instanceof HTMLElement) {
+            callto.innerText = "Loading..."
         }
-        templateElement.replaceWith(dataTarget)
+        if (dataTarget.complete) {
+            fin()
+        } else {
+            dataTarget.addEventListener("load", fin)
+            dataTarget.addEventListener("error", fin)
+        }
     }
 
     function statImage(source: HTMLElement, templateElement: HTMLElement) {

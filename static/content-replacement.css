@@ -9,11 +9,6 @@
     overflow: hidden;
 }
 
-.frozen {
-    width: var(--frozen-width);
-    height: var(--frozen-width);
-}
-
 .replaced-image::after {
     content: attr(alt);
     font-family: sans-serif;
