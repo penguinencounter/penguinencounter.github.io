@@ -4,3 +4,5 @@ deploy/
 dist/
 venv/
 __pycache__/
+
+PRIVATEKEY.pk
