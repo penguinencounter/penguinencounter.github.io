@@ -51,11 +51,13 @@ const config = {
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
     },
+    devtool: 'eval'
 };
 
 module.exports = () => {
     if (isProduction) {
         config.mode = 'production';
+        config.devtool = 'source-map';
     } else {
         config.mode = 'development';
     }
