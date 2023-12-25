@@ -1,7 +1,6 @@
 {
   "private": true,
   "devDependencies": {
-    "@webpack-cli/generators": "^3.0.7",
     "css-loader": "^6.8.1",
     "mini-css-extract-plugin": "^2.7.6",
     "sass": "^1.69.5",
