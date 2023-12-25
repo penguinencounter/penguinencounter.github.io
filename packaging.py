@@ -19,7 +19,7 @@ matches = [
     "dist",
     "static",
     "LICENSE",
-    *glob.glob("*.html"),
+    *glob.glob("src/*.html"),
 ]
 
 
@@ -54,6 +54,10 @@ def sizeof_remote(url: str) -> Tuple[int, bytes]:
 
 HTML_IMG_NOCOPY = []
 HTML_IMG_NODELETE = ["alt", "class", "id", "width", "height"]
+
+
+def match_cssimg(style_rules: str):
+    matcher = r"--src\s*:\s*url\s*\(\s*\"?(.*?)\"?(?<!\\)\)\s*;"
 
 
 def process_HTMLs(path: str, out_path: str):
@@ -92,7 +96,7 @@ def process_HTMLs(path: str, out_path: str):
             image[f"data-img-{attr}"] = copy.copy(image[attr])
             if attr not in HTML_IMG_NODELETE:
                 del image[attr]
-    
+
         image["data-replacement-type"] = "img"
 
         try:
@@ -114,7 +118,9 @@ def process_HTMLs(path: str, out_path: str):
             ):
                 if "style" not in image.attrs:
                     image["style"] = ""
-                image["style"] += f"--replaced-image-aspect: {image_data.width / image_data.height}; "
+                image[
+                    "style"
+                ] += f"--replaced-image-aspect: {image_data.width / image_data.height}; "
                 if request_width is not None and request_height is not None:
                     image["style"] += (
                         f"--replaced-image-width: {request_width}px; "

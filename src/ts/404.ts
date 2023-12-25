@@ -1,3 +1,5 @@
+import '../styles/404.scss'
+
 enum SearchResultT {
     does_not_exist,
     exists,

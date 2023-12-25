@@ -1,3 +1,4 @@
+import "../styles/content.scss"
 // Handles content replacement and data management.
 
 ; (function () {

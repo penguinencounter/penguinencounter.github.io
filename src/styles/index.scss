@@ -1,3 +1,5 @@
+@import "shared.scss";
+
 body {
     display: flex;
     justify-content: center;
@@ -26,6 +28,7 @@ main.content {
 }
 
 main.content ._above {
+    --source: url("https://upload.wikimedia.org/wikipedia/commons/5/5f/Oxygen_in_the_Great_Carina_Nebula-improved2.jpg");
     position: absolute;
     bottom: 100%;
     left: 0;

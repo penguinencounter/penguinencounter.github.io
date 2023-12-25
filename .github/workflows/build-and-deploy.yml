@@ -45,8 +45,8 @@ jobs:
         run: |
           npm install
           pip install -r requirements.txt
-      - name: Build TypeScript
-        run: npx tsc
+      - name: Build Webpack
+        run: npx webpack build --progress
       - name: Run packager
         run: python packaging.py deploy
       - name: Upload artifact
