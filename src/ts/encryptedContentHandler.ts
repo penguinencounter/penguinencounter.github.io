@@ -1,5 +1,7 @@
 function canDecrypt() {
-    return crypto.subtle && isSecureContext
+    const par = window.location.search
+    const parameters = new URLSearchParams(par)
+    return crypto.subtle && isSecureContext && parameters.get("nocrypt") === null
 }
 function hex2ui8(hex_str: string): Uint8Array {
     return new Uint8Array([...hex_str.matchAll(/[0-9a-f]{2}/g)].map(v => parseInt(v[0], 16)))
