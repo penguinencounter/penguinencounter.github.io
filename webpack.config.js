@@ -12,8 +12,18 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 
 const config = {
     entry: {
-        index: './src/ts/index.ts',
-        "404": './src/ts/404.ts',
+        article: [
+            './src/styles/article.scss',
+            './src/ts/article.ts',
+        ],
+        index: [
+            './src/styles/index.scss',
+            './src/ts/article.ts',
+        ],
+        "404": [
+            './src/styles/404.scss',
+            './src/ts/404.ts',
+        ],
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

@@ -7,5 +7,5 @@
     "allowJs": true,
     "strict": true
   },
-  "files": ["src/ts/index.ts", "src/ts/404.ts"]
+  "files": ["src/ts/article.ts", "src/ts/404.ts"]
 }

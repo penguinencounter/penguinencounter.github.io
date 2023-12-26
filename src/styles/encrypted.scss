@@ -18,6 +18,7 @@ body%encryption {
 
 %encryption {
     width: 100%;
+    box-sizing: border-box;
     min-height: 25vmax;
     background-color: #000000b0;
     backdrop-filter: blur(10px);

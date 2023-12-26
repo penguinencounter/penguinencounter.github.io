@@ -19,6 +19,7 @@ matches = [
     "dist",
     "static",
     "LICENSE",
+    "secret_deploy",
     *glob.glob("src/*.html"),
 ]
 

@@ -6,3 +6,5 @@ venv/
 __pycache__/
 
 PRIVATEKEY.pk
+secret_deploy/*
+!secret_deploy/README.md

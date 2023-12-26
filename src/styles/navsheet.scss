@@ -1,0 +1,18 @@
+@import "shared.scss";
+@import "encrypted.scss";
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.main_container {
+    width: 100vw;
+    max-width: 1000px;
+    min-height: 100vh;
+    background-color: #000000b0;
+    box-shadow: 0 0 16px #000000b0;
+    padding: 0;
+    margin: 0;
+}
+
