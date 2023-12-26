@@ -1,7 +1,22 @@
 function canDecrypt() {
     const par = window.location.search
     const parameters = new URLSearchParams(par)
-    return crypto.subtle && isSecureContext && parameters.get("nocrypt") === null
+    if (parameters.get("nocrypt") !== null) {
+        return {
+            available: false,
+            reason: "Decryption disabled by URL parameter. (ERR_DEBUG_NOCRYPT)"
+        }
+    }
+    if (!(crypto.subtle && isSecureContext)) {
+        return {
+            available: false,
+            reason: "The website is not being delivered over a secure connection, so the Web Cryptography API is not available. (ERR_NOT_SECURE_CONTEXT)"
+        }
+    }
+    return {
+        available: true,
+        reason: "okay?"
+    }
 }
 function hex2ui8(hex_str: string): Uint8Array {
     return new Uint8Array([...hex_str.matchAll(/[0-9a-f]{2}/g)].map(v => parseInt(v[0], 16)))
@@ -62,13 +77,14 @@ async function addForms() {
             setMessageBox("Critical information is missing! (ERR_BROKEN_INFO_REF_LATE)")
             return
         }
-        if (!canDecrypt()) {
+        const { available, reason } = canDecrypt()
+        if (!available) {
             const LinkTemplate = `https://gchq.github.io/CyberChef/#recipe=Register('KEY:%20(.*)$',true,true,false)Register('salt:(%5Ba-zA-Z0-9%2B/%3D%5D*)$',true,true,false)Register('iv:(%5Ba-zA-Z0-9%2B/%3D%5D*)$',true,true,false)Register('data:(%5B0-9a-f%5D*)$',true,true,false)Register('tag:(%5Ba-zA-Z0-9%2B/%3D%5D*)$',true,true,false)Find_/_Replace(%7B'option':'Regex','string':'.*'%7D,'',true,false,true,true)Derive_PBKDF2_key(%7B'option':'UTF8','string':'$R0'%7D,256,${info.iterations},'${info.hash.toString().replace(/-/g, '')}',%7B'option':'Base64','string':'$R1'%7D)Register('(%5B%5C%5Cs%5C%5CS%5D*)',true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5E.*$'%7D,'$R3',true,false,false,false)AES_Decrypt(%7B'option':'Hex','string':'$R5'%7D,%7B'option':'Base64','string':'$R2'%7D,'GCM','Hex','Raw',%7B'option':'Base64','string':'$R4'%7D,%7B'option':'Hex','string':''%7D)&input=`
             const CyberChefTemplate = `Only change the KEY line. You may need to press the blue BAKE button to refresh the output.\nKEY: <type your key here>\n\nsalt:${bytes2b64(info.salt)}\niv:${bytes2b64(info.init)}\ndata:${content}\ntag:${bytes2b64(info.tag)}\n`
             console.log(CyberChefTemplate)
             const urlparam = encodeURIComponent(window.btoa(CyberChefTemplate).replace(/=/g, ""))
             const finalLink = LinkTemplate + urlparam
-            setMessageBox(`The website is not being delivered over a secure connection, so the Web Cryptography API is not available. (ERR_NOT_SECURE_CONTEXT)<br>You can, however, decrypt the content using CyberChef, an external tool.<br>`)
+            setMessageBox(`${reason}<br>You can, however, decrypt the content using CyberChef, an external tool.<br>`)
             const link = document.createElement("a")
             link.href = finalLink
             link.target = "_blank"
