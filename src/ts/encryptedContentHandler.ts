@@ -13,6 +13,7 @@ function bytes2b64(bytes: Uint8Array): string {
 
 const FORM_ADDED_LABEL = "encrypted-content--form-added"
 let inuse = false
+let UUIDCounter = 0
 
 async function addForms() {
     if (inuse) return
@@ -28,7 +29,7 @@ async function addForms() {
 </form>`
     for (const target of targets) {
         target.classList.add(FORM_ADDED_LABEL)
-        const uuid = Math.random().toString(36).substring(2, 15)
+        const uuid = (UUIDCounter++).toString()
         target.innerHTML = templ.replace(/\$UUID/g, uuid) // If the template is malicious, it's already too late.
 
         // Add the event listener

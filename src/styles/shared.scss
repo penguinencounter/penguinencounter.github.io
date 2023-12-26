@@ -34,3 +34,15 @@ a {
         color: #ff80b0;
     }
 }
+
+.img-centered.img-centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.img-squash.img-squash {
+    max-width: 100%;
+    height: unset;
+    object-fit: contain;
+    aspect-ratio: var(--replaced-image-aspect);
+}
