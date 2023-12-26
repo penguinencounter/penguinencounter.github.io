@@ -1,3 +1,4 @@
+@use "_definitions.scss" as def;
 @import "shared.scss";
 @import "encrypted.scss";
 
@@ -23,6 +24,7 @@ body {
     position: relative;
     z-index: 5;
     &.banner--no-banner-image {
+        background: def.$banner-default;
         min-height: max(5rem + 10px, 33.3vh, 10vw + 20px);
     }
 }

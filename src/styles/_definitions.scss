@@ -1,6 +1,35 @@
+@use "sass:math";
+
+@function hueConicPolyfill($fromHue, $toHue, $toDeg, $sat, $val, $steps) {
+    $gradient: (
+    );
+
+@for $i from 0 to calc($steps + 1) {
+    $pct: calc($i / $steps);
+    $hue: calc($fromHue + $pct * ($toHue - $fromHue));
+    $deg: calc($pct * $toDeg);
+    $color: hsl($hue $sat $val);
+    $gradient: append($gradient, $color $deg, comma);
+}
+
+@return $gradient;
+}
+
+@function ray($from, $to, $color: #fff4, $edges: 1%) {
+    @return linear-gradient(120deg,
+        transparent 0,
+        transparent calc($from - ($edges / 2)),
+        $color calc($from + ($edges / 2)),
+        $color calc($to - ($edges / 2)),
+        transparent calc($to + ($edges / 2)),
+        transparent 100%);
+}
+
 $popup-background-style: linear-gradient(-22.5deg, #050505 0%, #150535 100%);
 $placeholder-color: #b080ff;
 $font: "Rubik", sans-serif;
 $progressive: #80ffb0;
 $progressive-disabled: #808080;
 $error: #ff8080;
+$banner-default: ray(50%, 60%), ray(65%, 70%), ray(72.5%, 75%), conic-gradient(from -90deg at 75% 110%, hueConicPolyfill(200deg, 300deg, 180deg, 80%, 33.3%, 20));
+@debug $banner-default;
