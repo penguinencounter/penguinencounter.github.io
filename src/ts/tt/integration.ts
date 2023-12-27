@@ -2,6 +2,10 @@
 let TTJSIntegration = {
 //  ^?
     okay: true,
+    load: () => {
+        console.info("Things should be loaded at this point, adding DOM elements")
+        const footer_bar = document.querySelector("#unity-footer")
+    }
 }
 
 interface Window {
@@ -9,4 +13,11 @@ interface Window {
 }
 window.TTJSIntegration = TTJSIntegration;
 
-console.info("Injection worked!!!!")
+
+if (window.Worker) {
+    console.info("Injection worked! Installing the worker now before the webpage catches up...")
+    const worker = new Worker("worker.js")
+    setTimeout(() => worker.terminate(), 1000)
+} else {
+    console.warn("Injection worked, but Web Workers are not supported.")
+}

@@ -16,3 +16,5 @@
 onmessage = function(e) {
     console.log(`Message received from main script: ${e.data}`)
 }
+
+console.info("Worker started. oh yeah self is ", self)
