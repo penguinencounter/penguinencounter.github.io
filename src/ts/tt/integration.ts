@@ -16,7 +16,7 @@ window.TTJSIntegration = TTJSIntegration;
 
 if (window.Worker) {
     console.info("Injection worked! Installing the worker now before the webpage catches up...")
-    const worker = new Worker("https://penguinencounter.github.io/dist/tt_worker.js")
+    const worker = new Worker("worker.js")
     setTimeout(() => worker.terminate(), 1000)
 } else {
     console.warn("Injection worked, but Web Workers are not supported.")
