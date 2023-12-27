@@ -41,9 +41,16 @@ async function addForms() {
     <h2>This content is encrypted</h2>
     <label for="decryption-key-$UUID">Enter key:</label>
     <input type="password" placeholder="passwd" id="decryption-key-$UUID" autocomplete="off" required>
+    <div class="encryption-form--savebox">
+        <input type="checkbox" id="save-key-$UUID">
+        <label for="save-key-$UUID">Use this key everywhere</label>
+    </div>
     <button type="submit" disabled>Unlock</button>
     <div class="encryption-form--errormsgbox"></div>
-</form>`
+</form>
+<div class="encryption-toolbox">
+
+</div>`
     for (const target of targets) {
         target.classList.add(FORM_ADDED_LABEL)
         const uuid = (UUIDCounter++).toString()
@@ -53,6 +60,7 @@ async function addForms() {
         const form = target.querySelector("form.encryption-form") as HTMLFormElement
         const passwd = form.querySelector("#decryption-key-" + uuid) as HTMLInputElement
         const button = form.querySelector("button") as HTMLButtonElement
+        const checkbox = form.querySelector("#save-key-" + uuid) as HTMLInputElement
         const msgbox = form.querySelector(".encryption-form--errormsgbox") as HTMLDivElement
         function setMessageBox(msg: string) {
             msgbox.classList.add("--show")
@@ -93,6 +101,33 @@ async function addForms() {
             msgbox.appendChild(link)
             continue
         }
+        
+        async function tryStoredKey(info: EncryptionInfo, content: Uint8Array): Promise<boolean> {
+            console.info("Attempting to decrypt with saved key.")
+            // we have a saved password
+            const key = localStorage.getItem("encryption-key")!!
+            passwd.value = key
+
+            // so uh try to decrypt it idk
+            let resp
+            try {
+                resp = await attemptDecrypt(key, info, content)
+            } catch (e) {
+                console.error("Decryption failed with autofill.")
+                setMessageBox("Decryption with the saved key failed. Enter a new key.")
+                return false
+            }
+            const dec = new TextDecoder().decode(resp)
+            target.classList.add("unlocked")  // prevent using CSS for encrypted content form box
+            target.innerHTML = dec
+            return true
+
+        }
+        if (localStorage.getItem("encryption-key") !== null) {
+            if (await tryStoredKey(info, hex2ui8(content))) {
+                continue
+            }
+        }
 
         // this also implicitly includes the above checks (they 'continue' if they fail)
         const valid = () => passwd.value.length > 0
@@ -109,8 +144,13 @@ async function addForms() {
                 resp = await attemptDecrypt(passwd.value, info, contentBytes)
             } catch (e) {
                 console.error("Decryption failed.")
-                setMessageBox("Decryption failed. Check your password and try again?")
+                setMessageBox("Decryption failed. Check your key and try again?")
                 return
+            }
+            // oh look it worked
+            if (checkbox.checked) {
+                // save the password
+                localStorage.setItem("encryption-key", passwd.value)
             }
             const dec = new TextDecoder().decode(resp)
             target.classList.add("unlocked")  // prevent using CSS for encrypted content form box
