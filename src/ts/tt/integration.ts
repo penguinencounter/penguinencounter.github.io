@@ -71,10 +71,10 @@ function displayError(message: string) {
     error.style.fontSize = "18px"
     error.style.color = "#000000"
     error.style.fontFamily = "arial, Helvetica, sans-serif"
-    error.innerText = message
+    error.textContent = message
     const footer_bar = document.querySelector("#unity-footer")!
     const append_before = footer_bar.querySelector("div#unity-fullscreen-button")!
-    footer_bar.insertBefore(append_before, error)
+    footer_bar.insertBefore(error, append_before)
 }
 
 
