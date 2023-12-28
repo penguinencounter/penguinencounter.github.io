@@ -100,7 +100,11 @@ if (window.Worker) {
     console.info("Injection worked! Installing the worker now before the webpage catches up...")
     const worker = new Worker("worker.js")
     worker.onmessage = function (e) {
-        console.log(`Message received from worker script: ${e.data}`)
+        try {
+            console.log(`Message received from worker script: ${JSON.stringify(e.data)}`)
+        } catch (e) {
+            console.log(`Message received from worker script: (JSONify failed) ${e.data}`)
+        }
         const packet = e.data as MessagePacket
         NetQueue.push(packet)
     }
