@@ -24,7 +24,11 @@ type MessagePacket = {
  *     - warning! the data will be unusable in the source context after transfer!
  */
 onmessage = function(e) {
-    console.log(`Message received from main script: ${e.data}`)
+    try {
+        console.log(`Message received from worker script: ${JSON.stringify(e.data)}`)
+    } catch (err) {
+        console.log(`Message received from worker script: (JSONify failed) ${e.data}`)
+    }
     const packet = e.data as MessagePacket
     switch (packet.action) {
         case "version":

@@ -19,7 +19,7 @@ type VersionSpec = {
 }
 const VERSION_I: VersionSpec = {
     major: 0,
-    patch: 2,
+    patch: 3,
 }
 
 const NetQueue: MessagePacket[] = []
