@@ -1,11 +1,7 @@
 
 let TTJSIntegration = {
     //  ^?
-    okay: true,
-    load: () => {
-        console.info("Things should be loaded at this point, adding DOM elements")
-        const footer_bar = document.querySelector("#unity-footer")
-    }
+    okay: true
 }
 
 interface Window {
@@ -19,7 +15,7 @@ type VersionSpec = {
 }
 const VERSION_I: VersionSpec = {
     major: 0,
-    patch: 3,
+    patch: 4,
 }
 
 const NetQueue: MessagePacket[] = []
@@ -84,12 +80,14 @@ async function mainInit(worker: Worker) {
     if (workerVersion.major !== VERSION_I.major) {
         console.error("Major version mismatch! Stopping!")
         displayError("Service wrong version")
+        TTJSIntegration.okay = false
         worker.terminate()
         return
     }
     if (workerVersion.patch < VERSION_I.patch) {
         console.warn("Outdated worker build! Stopping!")
         displayError("Service outdatated")
+        TTJSIntegration.okay = false
         worker.terminate()
         return
     }
