@@ -3,6 +3,16 @@
 // Remember, the only way out of here is postMessage(), and the only way in is onmessage()
 // (well, there's also FetchEvent but who would use that for communication?)
 
+const VERSION_W: VersionSpec = {
+    major: 0,
+    patch: 2
+}
+
+type MessagePacket = {
+    action: string,
+    data: any,
+}
+
 /**
  * Rules for postMessage():
  * - no Functions
@@ -15,6 +25,19 @@
  */
 onmessage = function(e) {
     console.log(`Message received from main script: ${e.data}`)
+    const packet = e.data as MessagePacket
+    switch (packet.action) {
+        case "version":
+            self.postMessage({
+                action: "version",
+                data: VERSION_W,
+            })
+            break
+        default:
+            console.warn("Unknown message type! ", packet)
+            break
+    }
 }
 
-console.info("Worker started. oh yeah self is ", self)
+console.info("Worker started. oh yeah self is")
+console.info(self)
