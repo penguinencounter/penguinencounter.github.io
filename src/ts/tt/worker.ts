@@ -1,4 +1,7 @@
-// THIS IS A WORKER SCRIPT :D
+// THIS IS A SERVICE WORKER SCRIPT :D
+/// <reference path='../../../node_modules/typescript/lib/lib.es6.d.ts' />
+/// <reference path='../../../node_modules/typescript/lib/lib.webworker.d.ts' />
+// It gets installed and runs over any page that registers it
 // globals are actually WorkerGlobalScope / WindowOrWorkerGlobalScope
 // Remember, the only way out of here is postMessage(), and the only way in is onmessage()
 // (well, there's also FetchEvent but who would use that for communication?)
@@ -13,35 +16,37 @@ type MessagePacket = {
     data: any,
 }
 
-/**
- * Rules for postMessage():
- * - no Functions
- * - no DOM elements (maybe use an object as a proxy, have the main script parse the effects?)
- * - RegExps will be rewound (lastIndex set to 0)
- * - Everything is read/write
- * - Prototypes are not transferred
- * - If you need to send an ArrayBuffer or other low-level data, transfer it
- *     - warning! the data will be unusable in the source context after transfer!
- */
-onmessage = function(e) {
-    try {
-        console.log(`Message received from host script: ${JSON.stringify(e.data)}`)
-    } catch (err) {
-        console.log(`Message received from host script: (JSONify failed) ${e.data}`)
-    }
-    const packet = e.data as MessagePacket
-    switch (packet.action) {
-        case "version":
-            self.postMessage({
-                action: "version",
-                data: VERSION_W,
-            })
-            break
-        default:
-            console.warn("Unknown message type! ", packet)
-            break
-    }
+let redirects = {
+    doPerform: false,
+    newBaseURI: "",
 }
 
-console.info("Worker started. oh yeah self is")
-console.info(self)
+export { }
+declare var self: ServiceWorkerGlobalScope;
+
+self.addEventListener("message", async (event) => {
+    const packet = event.data as MessagePacket
+    const client = event.source as Client
+    if (packet.action === "version") {
+        client.postMessage({
+            action: "version",
+            data: VERSION_W,
+        })
+    } else if (packet.action === "reset") {
+        redirects.doPerform = false
+        client.postMessage({
+            action: "reset",
+            data: null,
+        })
+    }
+})
+
+self.addEventListener("install", (event) => {
+    event.waitUntil((async () => {
+        self.skipWaiting() // shut up and activate already
+    })())
+})
+self.addEventListener("activate", (event) => {
+    // hello! cast magic missle or something now
+    
+})

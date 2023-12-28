@@ -7,7 +7,7 @@
     "allowJs": true,
     "strict": true,
     "lib": [
-      "ES2020",
+      "esnext",
       "DOM",
       "DOM.Iterable",
       "WebWorker"

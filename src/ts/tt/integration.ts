@@ -18,6 +18,11 @@ const VERSION_I: VersionSpec = {
     patch: 4,
 }
 
+type MessagePacket = {
+    action: string,
+    data: any,
+}
+
 const NetQueue: MessagePacket[] = []
 const wants: { [key: string]: ((target: MessagePacket) => boolean)[] } = {}
 
@@ -74,40 +79,57 @@ function displayError(message: string) {
 }
 
 
-async function mainInit(worker: Worker) {
-    // ask the worker what version it is
-    const workerVersion = (await query(worker, "version", null)).data as VersionSpec
-    if (workerVersion.major !== VERSION_I.major) {
-        console.error("Major version mismatch! Stopping!")
-        displayError("Service wrong version")
-        TTJSIntegration.okay = false
-        worker.terminate()
-        return
+async function registerServiceWorker(): Promise<boolean> {
+    if ('serviceWorker' in navigator) {
+        try {
+            const registration = await navigator.serviceWorker.register('worker.js', {scope: './'})
+            if (registration.installing) {
+                console.log('Service worker installing ⌛')
+            } else if (registration.waiting) {
+                console.log('Service worker waiting to switch in 😴')
+            } else if (registration.active) {
+                console.log('Service worker active ✅')
+            }
+            return true;
+        } catch (err) {
+            console.error('Registration failed 😫', err)
+            return false;
+        }
     }
-    if (workerVersion.patch < VERSION_I.patch) {
-        console.warn("Outdated worker build! Stopping!")
-        displayError("Service outdatated")
-        TTJSIntegration.okay = false
-        worker.terminate()
-        return
-    }
+    return false;
+}
+
+
+async function preInit() {
+    const installed = await registerServiceWorker()
+}
+
+
+async function mainInit() {
+    // // ask the worker what version it is
+    // const workerVersion = (await query(worker, "version", null)).data as VersionSpec
+    // if (workerVersion.major !== VERSION_I.major) {
+    //     console.error("Major version mismatch! Stopping!")
+    //     displayError("Service wrong version")
+    //     TTJSIntegration.okay = false
+    //     worker.terminate()
+    //     return
+    // }
+    // if (workerVersion.patch < VERSION_I.patch) {
+    //     console.warn("Outdated worker build! Stopping!")
+    //     displayError("Service outdatated")
+    //     TTJSIntegration.okay = false
+    //     worker.terminate()
+    //     return
+    // }
 }
 
 
 if (window.Worker) {
     console.info("Injection worked! Installing the worker now before the webpage catches up...")
-    const worker = new Worker("worker.js")
-    worker.onmessage = function (e) {
-        try {
-            console.log(`Message received from worker script: ${JSON.stringify(e.data)}`)
-        } catch (err) {
-            console.log(`Message received from worker script: (JSONify failed) ${e.data}`)
-        }
-        const packet = e.data as MessagePacket
-        NetQueue.push(packet)
-    }
+    preInit()
     queueCycler()
-    window.addEventListener("DOMContentLoaded", () => mainInit(worker))
+    window.addEventListener("DOMContentLoaded", () => mainInit())
 } else {
     console.warn("Injection worked, but Web Workers are not supported.")
 }
