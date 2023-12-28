@@ -79,7 +79,7 @@ function displayError(message: string) {
 }
 
 
-async function registerServiceWorker(): Promise<boolean> {
+async function registerServiceWorker(): Promise<ServiceWorker | false> {
     if ('serviceWorker' in navigator) {
         try {
             const registration = await navigator.serviceWorker.register('worker.js', {scope: './'})
@@ -89,8 +89,11 @@ async function registerServiceWorker(): Promise<boolean> {
                 console.log('Service worker waiting to switch in 😴')
             } else if (registration.active) {
                 console.log('Service worker active ✅')
+            } else {
+                throw 'Service worker not registered 😢'
             }
-            return true;
+            // more than one of these could be true, we want the newest one
+            return <ServiceWorker>(registration.installing || registration.waiting || registration.active);
         } catch (err) {
             console.error('Registration failed 😫', err)
             return false;
@@ -101,7 +104,13 @@ async function registerServiceWorker(): Promise<boolean> {
 
 
 async function preInit() {
-    const installed = await registerServiceWorker()
+    const serviceWorker = await registerServiceWorker()
+    if (serviceWorker === false) {
+        console.warn("Service worker registration failed.")
+        displayError("APIs missing")
+        TTJSIntegration.okay = false
+        return
+    }
 }
 
 

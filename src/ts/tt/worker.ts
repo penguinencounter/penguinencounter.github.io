@@ -42,11 +42,12 @@ self.addEventListener("message", async (event) => {
 })
 
 self.addEventListener("install", (event) => {
+    console.info("Install service worker...")
     event.waitUntil((async () => {
         self.skipWaiting() // shut up and activate already
     })())
 })
 self.addEventListener("activate", (event) => {
     // hello! cast magic missle or something now
-    
+    console.info("WE ACTIVATED WHOOOOOOOO")
 })
