@@ -5,7 +5,7 @@
 
 const VERSION_W: VersionSpec = {
     major: 0,
-    patch: 2
+    patch: 3
 }
 
 type MessagePacket = {
@@ -25,9 +25,9 @@ type MessagePacket = {
  */
 onmessage = function(e) {
     try {
-        console.log(`Message received from worker script: ${JSON.stringify(e.data)}`)
+        console.log(`Message received from host script: ${JSON.stringify(e.data)}`)
     } catch (err) {
-        console.log(`Message received from worker script: (JSONify failed) ${e.data}`)
+        console.log(`Message received from host script: (JSONify failed) ${e.data}`)
     }
     const packet = e.data as MessagePacket
     switch (packet.action) {
