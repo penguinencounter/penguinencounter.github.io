@@ -102,7 +102,7 @@ if (window.Worker) {
     worker.onmessage = function (e) {
         try {
             console.log(`Message received from worker script: ${JSON.stringify(e.data)}`)
-        } catch (e) {
+        } catch (err) {
             console.log(`Message received from worker script: (JSONify failed) ${e.data}`)
         }
         const packet = e.data as MessagePacket
