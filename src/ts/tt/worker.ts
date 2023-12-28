@@ -5,7 +5,7 @@
 
 const VERSION_W: VersionSpec = {
     major: 0,
-    patch: 3
+    patch: 4
 }
 
 type MessagePacket = {
