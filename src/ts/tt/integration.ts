@@ -50,6 +50,7 @@ async function query(deliverTo: Worker, action: string, data: any): Promise<Mess
     })
     return await new Promise(
         resolve => {
+            wants[action] = wants[action] || []
             wants[action].push(response => {
                 resolve(response)
                 return true
