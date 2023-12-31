@@ -23,13 +23,7 @@ const config = {
         "404": [
             './src/styles/404.scss',
             './src/ts/404.ts',
-        ],
-        tt_integration: [
-            './src/ts/tt/integration.ts',
-        ],
-        tt_worker: [
-            './src/ts/tt/worker.ts',
-        ],
+        ]
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
