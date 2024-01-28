@@ -1,0 +1,20 @@
+[collect]
+rules = [
+    'src/*.html',
+    'dist',
+    'static',
+    'LICENSE',
+    'secret_deploy'
+]
+
+[preprocess]
+use = [
+    'parse_html'
+]
+
+[build]
+[build.full]
+exclude = [
+    '404\.(html|js|ts|css)$'
+]
+
