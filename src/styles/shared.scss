@@ -114,10 +114,6 @@ details {
 
                     & details {
                         @include tier(6);
-
-                        & details {
-                            @include tier(7);
-                        }
                     }
                 }
             }
