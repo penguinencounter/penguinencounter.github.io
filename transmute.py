@@ -1,7 +1,6 @@
 import os
-import subprocess
 import sys
-import tomllib as toml
+from strictyaml import load as loadyaml
 import shutil
 from glob import glob
 from tempfile import TemporaryDirectory
@@ -17,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(name)s: %(message)s", handler
 log = logging.getLogger("core")
 
 def stop(reason: str) -> NoReturn:
-    log.fatal(f'{reason}')
+    log.fatal(f"{reason}")
     exit(1)
 
 
@@ -54,9 +53,7 @@ class PluginPipelineInfo(NamedTuple):
 
     @classmethod
     def load(cls, template: dict):
-        return cls(
-            "file"
-        )
+        return cls("file")
 
 
 class AboutPlugin(NamedTuple):
@@ -76,11 +73,15 @@ class AboutPlugin(NamedTuple):
         elif isinstance(provides, list):
             provide_lst.update(provides)
         else:
-            stop(f"While loading plugin {name} info: 'provides' is not list or string or nothing (actually {provides=})")
+            stop(
+                f"While loading plugin {name} info: 'provides' is not list or string or nothing (actually {provides=})"
+            )
         provide_lst.add(name)
         use = template.get("use", [])
         if not isinstance(use, list):
-            stop(f"While loading plugin {name} info: 'use' is not list or nothing (actually {use=})")
+            stop(
+                f"While loading plugin {name} info: 'use' is not list or nothing (actually {use=})"
+            )
         path = template.get("path")
         if path is None:
             stop(f"While loading plugin {name} info: no source path")
@@ -89,15 +90,16 @@ class AboutPlugin(NamedTuple):
         if pipeline_data is None:
             stop(f"While loading plugin {name} info: no pipeline info")
         elif not isinstance(pipeline_data, dict):
-            stop(f"While loading plugin {name} info: 'pipeline' is not table (actually {pipeline_data=})")
+            stop(
+                f"While loading plugin {name} info: 'pipeline' is not table (actually {pipeline_data=})"
+            )
         return cls(
-            name = name,
-            provides = provide_lst,
-            use = use,
-            path = path,
-            pipeline = PluginPipelineInfo.load(pipeline_data)
+            name=name,
+            provides=provide_lst,
+            use=use,
+            path=path,
+            pipeline=PluginPipelineInfo.load(pipeline_data),
         )
-
 
 
 def load_plugin(about_plugin: AboutPlugin):
@@ -109,8 +111,8 @@ def load_plugin(about_plugin: AboutPlugin):
 
 
 def check_consistency(plugin_list: list[AboutPlugin]):
-    available_names = set()
-    requested_names = set()
+    available_names: set[str] = set()
+    requested_names: set[str] = set()
     for plugin in plugin_list:
         available_names.update(plugin.provides)
         requested_names.update(plugin.use)
@@ -118,16 +120,24 @@ def check_consistency(plugin_list: list[AboutPlugin]):
     if len(missing) > 0:
         stop(f"Plugin consistency error: no plugin can meet requirements: {missing}")
     else:
-        log.info(f"plugin consistency check passed")
+        log.info(
+            f"Plugin consistency check passed. {len(available_names)} slots provided, "
+            f"{len(requested_names)} slots requested."
+        )
+    return available_names
 
 
 def main():
-    conf_path = os.environ.get("TRANSMUTE_CONF", "transmute.toml")
+    conf_path = os.environ.get("TRANSMUTE_CONF", "transmute.yaml")
     if not os.path.exists(conf_path):
-        stop(f"No configuration file found at {conf_path}. Set TRANSMUTE_CONF or create transmute.toml in the working directory.")
+        stop(
+            f"No configuration file found at {conf_path}. Set TRANSMUTE_CONF or create transmute.toml in the working directory."
+        )
     with open(conf_path) as f:
         raw_conf = f.read()
-    conf = toml.loads(raw_conf)
+    conf = loadyaml(raw_conf).data
+    if not isinstance(conf, dict):
+        stop(f"Invalid type: configuration should be a dict, is actually {type(conf)}")
 
     # Collect
     collect_conf = conf.get("collect", {})
@@ -140,16 +150,18 @@ def main():
         stop("No input rules specified (collect.rules is empty)")
     sources = collect(rules)
     log.info("%d sources", len(sources))
-    
+
     engine = os.environ.get("PYTHON_EXE", sys.executable)
     if not engine or not os.path.exists(engine):
-        stop(f"Cannot find Python interpreter. Guessed {engine if engine else '(failed to retrieve)'}. Set PYTHON_EXE to the path of a Python interpreter.")
+        stop(
+            f"Cannot find Python interpreter. Guessed {engine if engine else '(failed to retrieve)'}. Set PYTHON_EXE to the path of a Python interpreter."
+        )
 
     raw_plugins = conf.get("plugins", {})
     if not isinstance(raw_plugins, dict):
         stop(f"Invalid type: 'plugins' should be a dict")
     plugins = [AboutPlugin.load(k, v) for k, v in raw_plugins.items()]
-    check_consistency(plugins)
+    available_slots = check_consistency(plugins)
     log.info("%d plugins ready", len(raw_plugins))
 
     with prepare_env(sources) as presrc:
@@ -164,7 +176,6 @@ def main():
                 stop(f"Invalid type: preprocess.use should be list, is actually {type(pre_use)}")
             for pre in pre_use:
                 ...
-                
 
 
 if __name__ == "__main__":
