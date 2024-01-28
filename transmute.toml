@@ -8,13 +8,40 @@ rules = [
 ]
 
 [preprocess]
-use = [
-    'parse_html'
-]
 
 [build]
 [build.full]
+use = [
+    "image_replace"
+]
 exclude = [
     '404\.(html|js|ts|css)$'
 ]
+
+# Plugins
+
+[plugins.parse_html]
+provides = ["parse_html"]
+use = []
+path = "Plugins/parse_html.py"
+
+[plugins.parse_html.pipeline]
+target = "file"
+match = [
+    '.*\.html$'
+]
+entrypoint = "main"
+
+
+[plugins.image_replace]
+provides = ["image_replace"]
+use = ["parse_html"]
+path = "Plugins/image_replace.py"
+
+[plugins.image_replace.pipeline]
+target = "file"
+match = [
+    '.*\.html$'
+]
+entrypoint = "main"
 
