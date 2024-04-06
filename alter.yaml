@@ -5,7 +5,6 @@ collect:
         - 'static'
         - 'LICENSE'
         - 'secret_deploy'
-preprocess:
 
 build:
     full:
@@ -18,6 +17,7 @@ plugins:
     parse_html:
         provides:
             - parse_html
+            - collide
         path: Plugins/parse_html.py
         pipeline:
             target: file
@@ -31,7 +31,7 @@ plugins:
             - parse_html
         path: Plugins/image_replace.py
         pipeline:
-            target: file
+            target: project
             match:
                 - '.*\.html'
             entrypoint: main
