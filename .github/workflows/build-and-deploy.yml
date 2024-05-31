@@ -48,7 +48,7 @@ jobs:
       - name: Build Webpack
         run: npm run build
       - name: Run packager
-        run: python packaging.py deploy
+        run: python build_variants.py
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
