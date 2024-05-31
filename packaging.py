@@ -1,8 +1,8 @@
 import argparse
+import copy
 import glob
 import os
 import shutil
-import copy
 from functools import lru_cache
 from io import BytesIO
 from pathlib import Path, PurePosixPath
