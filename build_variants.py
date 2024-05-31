@@ -1,12 +1,12 @@
 import os
 import re
 import shutil
-import subprocess
 import tempfile
 from pathlib import Path
 from typing import Literal, Callable, NamedTuple
 
 import bs4
+from bs4 import Tag
 
 
 class MapProvider:
@@ -77,10 +77,11 @@ SOURCES = [
     SourceMap(r"^src/(.*?\.html)$", "$1$"),
 ]
 
-CRITICAL = [
-    'var_unavailable.html',
-    'dist/article.css'
-]
+
+class BuildScript(NamedTuple):
+    name: str
+    target: Callable[[Path], None]
+    mount: str
 
 
 def prepare(target: Path):
@@ -122,6 +123,39 @@ def prepare(target: Path):
     )
 
 
+def variant_relatives(page: bs4.BeautifulSoup, build: BuildScript):
+    if build.mount == "":
+        return
+
+    def is_local(a: Tag):
+        return "data-link-absolute" not in a.attrs
+
+    for result in filter(is_local, page.select("[href], [src]")):
+        result: Tag
+        if result.name == 'script':
+            continue
+        if result.name == 'link' and 'rel' in result.attrs and 'stylesheet' in result.attrs['rel']:
+            continue
+        if "href" in result.attrs:
+            if result.attrs["href"].startswith("/") and not result.attrs["href"].startswith("//"):
+                result.attrs["href"] = "/" + build.mount + result.attrs["href"]
+        if "src" in result.attrs:
+            if result.attrs["src"].startswith("/") and not result.attrs["src"].startswith("//"):
+                result.attrs["src"] = "/" + build.mount + result.attrs["src"]
+
+
+def resolve_relative_uris(base: Path, build: BuildScript):
+    for path, dirs, files in base.walk():
+        for file in files:
+            if not file.endswith(".html"):
+                continue
+            with open(path / file) as f:
+                soup = bs4.BeautifulSoup(f.read(), "html.parser")
+            variant_relatives(soup, build)
+            with open(path / file, "w") as f:
+                f.write(soup.decode())
+
+
 def process_variant_desc(page: bs4.BeautifulSoup, target_name: str) -> bool:
     # <meta name="variants" allow target="nojs">
     if page.select('meta[name="variants"][data-deny-all]'):
@@ -161,19 +195,20 @@ def process_noscript(target: Path, force: bool = False):
 
 
 def noscript(target: Path):
+    shutil.rmtree(target / "dist", ignore_errors=True)
     targets = []
     for base, dirs, files in os.walk(target):
         for file in files:
             if file.endswith(".html"):
                 targets.append(Path(base) / file)
             elif file.endswith(".js"):
-                (Path(base)/file).unlink()
-    missing_template = process_noscript(target/'var_unavailable.html', force=True)
+                (Path(base) / file).unlink()
+    missing_template = process_noscript(target / "var_unavailable.html", force=True)
     for target in targets:
         struct = process_noscript(target)
         if struct is None:
             struct = missing_template
-        with open(target, 'w') as f:
+        with open(target, "w") as f:
             f.write(struct.decode())
 
 
@@ -181,29 +216,21 @@ def full(target: Path):
     pass
 
 
-class BuildScript(NamedTuple):
-    name: str
-    target: Callable[[Path], None]
-    mount: str
-
-
 if __name__ == "__main__":
-    builds = [
-        BuildScript('nojs', noscript, 'v/nojs'),
-        BuildScript('full', full, '')
-    ]
-    output = Path('deploy')
+    builds = [BuildScript("nojs", noscript, "v/nojs"), BuildScript("full", full, "")]
+    output = Path("deploy")
     shutil.rmtree(output, ignore_errors=True)
     os.makedirs(output)
     for script in builds:
         name, processor, mount = script.name, script.target, script.mount
         with tempfile.TemporaryDirectory() as td:
             p = Path(td)
-            print(f'building {name}')
+            print(f"building {name}")
             prepare(p)
+            resolve_relative_uris(p, script)
             processor(p)
             module_out = output / mount
             if module_out.exists():
-                print(f'[WARNING] clobbering {module_out} - check mount points')
+                print(f"[WARNING] clobbering {module_out} - check mount points")
             module_out.mkdir(parents=True, exist_ok=True)
             shutil.copytree(p, module_out, dirs_exist_ok=True)
