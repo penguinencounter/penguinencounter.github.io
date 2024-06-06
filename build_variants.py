@@ -22,7 +22,8 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-jinja = Environment(loader=FileSystemLoader("src"), autoescape=select_autoescape())
+TEMPLATE_DIR = Path("src")
+jinja = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=select_autoescape())
 
 
 class MapProvider:
@@ -101,13 +102,14 @@ class ProcessingAction:
 
 
 class Attachments:
-    def __init__(self, build_script: BuildScript):
+    def __init__(self, build_script: BuildScript, base_path: Path):
         self.build_script: BuildScript = build_script
+        self.base_path: Path = base_path
 
 
 class FileAttachments(Attachments):
-    def __init__(self, build_script: BuildScript):
-        super().__init__(build_script)
+    def __init__(self, build_script: BuildScript, base_path: Path):
+        super().__init__(build_script, base_path)
         self.soup: bs4.BeautifulSoup | None = None
         self.soup_modified: bool = False
 
@@ -227,7 +229,7 @@ def noscript_v2(target: Path, attach: FileAttachments):
     attach.soup_modified = True
     for e in struct.find_all("script"):
         e.decompose()
-    for e in struct.select('[data-js-required]'):
+    for e in struct.select("[data-js-required]"):
         e.decompose()
 
 
@@ -239,7 +241,7 @@ def process_noscript(target: Path, force: bool = False):
         return None
     for e in struct.find_all("script"):
         e.decompose()
-    for e in struct.select('[data-js-required]'):
+    for e in struct.select("[data-js-required]"):
         e.decompose()
     return struct
 
@@ -264,14 +266,26 @@ def noscript(target: Path, _: Attachments, progr: Progress, task: TaskID):
         progr.advance(task, 1)
 
 
+def pjinja(target: Path, att: Attachments):
+    if target.suffix != ".html":
+        return
+    template_name = str(target.relative_to(att.base_path))
+    result = jinja.get_template(template_name).render()
+    with open(target, "w") as f:
+        f.write(result)
+
+
 def full(target: Path):
     pass
 
 
 if __name__ == "__main__":
+    jinja_task = ('file', pjinja)
     builds = [
-        BuildScript("nojs", [("file", noscript_v2), ("file", fix_rel_url), ("project", noscript)], "v/nojs"),
-        BuildScript("full", [("file", fix_rel_url)], ""),
+        BuildScript(
+            "nojs", [jinja_task, ("file", noscript_v2), ("file", fix_rel_url), ("project", noscript)], "v/nojs"
+        ),
+        BuildScript("full", [jinja_task, ("file", fix_rel_url)], ""),
     ]
     output = Path("deploy")
     shutil.rmtree(output, ignore_errors=True)
@@ -323,7 +337,7 @@ if __name__ == "__main__":
                     for x in range(idx, idx + len(this_batch)):
                         prog.start_task(tasks[x])
                         prog.update(tasks[x], total=len(paths))
-                    attach = FileAttachments(script)
+                    attach = FileAttachments(script, p)
                     for path in paths:
                         for i, (_, process) in enumerate(this_batch):
                             if not (path.exists() and path.is_file()):
@@ -340,7 +354,7 @@ if __name__ == "__main__":
                             prog.advance(tasks[idx + i])
                 else:
                     prog.start_task(tasks[idx])
-                    attach = Attachments(script)
+                    attach = Attachments(script, p)
                     _, process = leader
                     process(p, attach, prog, tasks[idx])
                 idx += len(this_batch)
