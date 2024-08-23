@@ -3,9 +3,10 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
-from typing import Literal, NamedTuple, Protocol
+from typing import Literal, NamedTuple, Protocol, cast
 
 import bs4
 from bs4 import Tag
@@ -87,11 +88,11 @@ class SourceMap(MapProvider):
 SOURCES = [
     DiscardMap(r"^node_modules"),
     DiscardMap(r"^deploy"),
-    SourceMap(r"(dist/.*)$", r"$1$"),
-    SourceMap(r"(static/.*)$", r"$1$"),
-    SourceMap(r"(secret_deploy/.*)$", r"$1$"),
+    SourceMap(r"(dist[/\\].*)$", r"$1$"),
+    SourceMap(r"(static[/\\].*)$", r"$1$"),
+    SourceMap(r"(secret_deploy[/\\].*)$", r"$1$"),
     SourceMap(r"^LICENSE$"),
-    SourceMap(r"^src/(.*?\.html)$", "$1$"),
+    SourceMap(r"^src[/\\](.*?\.html)$", "$1$"),
 ]
 
 
@@ -102,32 +103,34 @@ class ProcessingAction:
 
 
 class Attachments:
-    def __init__(self, build_script: BuildScript, base_path: Path):
+    def __init__(self, build_script: BuildScript, base_path: Path, /):
         self.build_script: BuildScript = build_script
         self.base_path: Path = base_path
 
 
 class FileAttachments(Attachments):
-    def __init__(self, build_script: BuildScript, base_path: Path):
+    def __init__(self, build_script: BuildScript, base_path: Path, /):
         super().__init__(build_script, base_path)
         self.soup: bs4.BeautifulSoup | None = None
         self.soup_modified: bool = False
 
 
 class FileActionType(Protocol):
-    def __call__(self, path: Path, attachments: FileAttachments): ...
+    __name__: str
+    def __call__(self, path: Path, attachments: FileAttachments, /): ...
 
 
 class ProjectActionType(Protocol):
+    __name__: str
     def __call__(
-        self, path: Path, attachments: Attachments, progress: Progress | None = None, task: TaskID | None = None
+        self, path: Path, attachments: Attachments, progress: Progress | None = None, task: TaskID | None = None, /
     ): ...
 
 
 class BuildScript(NamedTuple):
     name: str
     targets: list[
-        tuple[Literal["file"], FileActionType] | tuple[Literal["project"], ProjectActionType]
+        tuple[str, FileActionType | ProjectActionType]
     ]
     mount: str
 
@@ -236,7 +239,7 @@ def noscript_v2(target: Path, attach: FileAttachments):
 
 
 def process_noscript(target: Path, force: bool = False):
-    with open(target) as f:
+    with open(target, encoding="utf-8") as f:
         content = f.read()
         struct = bs4.BeautifulSoup(content, "html.parser")
     if not force and not process_variant_desc(struct, "nojs"):
@@ -248,7 +251,7 @@ def process_noscript(target: Path, force: bool = False):
     return struct
 
 
-def noscript(target: Path, _: Attachments, progr: Progress, task: TaskID):
+def noscript(target: Path, _: Attachments, progr: Progress | None = None, task: TaskID | None = None):
     shutil.rmtree(target / "dist", ignore_errors=True)
     targets = []
     for base, dirs, files in os.walk(target):
@@ -257,24 +260,33 @@ def noscript(target: Path, _: Attachments, progr: Progress, task: TaskID):
                 targets.append(Path(base) / file)
             elif file.endswith(".js"):
                 (Path(base) / file).unlink()
-    progr.update(task, total=len(targets))
-    missing_template = process_noscript(target / "var_unavailable.html", force=True)
+    if progr and task:
+        progr.update(task, total=len(targets))
+    try:
+        missing_template = process_noscript(target / "var_unavailable.html", force=True)
+    except FileNotFoundError as e:
+        rp('[bold red]stopped at exception: [/]', e)
+        if progr:
+            progr.stop()
+        subprocess.call(['pwsh'], cwd=target)
+        raise
     assert missing_template is not None
     for target in targets:
         struct = process_noscript(target)
         if struct is None:
             struct = missing_template
-        with open(target, "w") as f:
+        with open(target, "w", encoding="utf-8") as f:
             f.write(struct.decode())
-        progr.advance(task, 1)
+        if progr and task:
+            progr.advance(task, 1)
 
 
 def pjinja(target: Path, att: Attachments):
     if target.suffix != ".html":
         return
-    template_name = str(target.relative_to(att.base_path))
+    template_name = str(target.relative_to(att.base_path)).replace("\\", "/")
     result = jinja.get_template(template_name).render()
-    with open(target, "w") as f:
+    with open(target, "w", encoding="utf-8") as f:
         f.write(result)
 
 
@@ -343,6 +355,7 @@ if __name__ == "__main__":
                     attach = FileAttachments(script, p)
                     for path in paths:
                         for i, (_, process) in enumerate(this_batch):
+                            process = cast(FileActionType, process)
                             if not (path.exists() and path.is_file()):
                                 prog.advance(tasks[idx + i])
                                 continue
@@ -352,13 +365,15 @@ if __name__ == "__main__":
                                 attach.soup = bs4.BeautifulSoup(content, "html.parser")
                             process(path, attach)
                             if attach.soup_modified:
-                                with open(path, "w") as f:
+                                assert attach.soup
+                                with open(path, "w", encoding="utf-8") as f:
                                     f.write(attach.soup.decode())
                             prog.advance(tasks[idx + i])
                 else:
                     prog.start_task(tasks[idx])
                     attach = Attachments(script, p)
                     _, process = leader
+                    process = cast(ProjectActionType, process)
                     process(p, attach, prog, tasks[idx])
                 idx += len(this_batch)
 

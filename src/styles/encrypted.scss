@@ -61,12 +61,13 @@ body%encryption {
         }
         .encryption-form--errormsgbox {
             display: none;
-            &.--show {
-                display: block;
-            }
             margin-top: 5px;
             font-size: 1rem;
             color: def.$error;
+            
+            &.--show {
+                display: block;
+            }
         }
         .encryption-form--savebox {
             margin-top: 5px;
