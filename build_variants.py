@@ -38,7 +38,7 @@ class DiscardMap(MapProvider):
         self.inbound_pat = re.compile(self.inbound)
 
     def process(
-        self, source_path: Path, output: Path
+        self, source_path: Path, output_path: Path
     ) -> tuple[Literal[True], Path] | tuple[Literal[False] | Literal[None], Literal[None]]:
         local = source_path.relative_to(os.curdir)
         match = self.inbound_pat.search(str(local))
@@ -56,7 +56,7 @@ class SourceMap(MapProvider):
         self.outbound = outbound_pattern
 
     def process(
-        self, source_path: Path, output: Path
+        self, source_path: Path, output_path: Path
     ) -> tuple[Literal[True], Path] | tuple[Literal[None], Literal[None]]:
         local = source_path.relative_to(os.curdir)
         match = self.inbound_pat.search(str(local))
@@ -81,7 +81,7 @@ class SourceMap(MapProvider):
             result += bindings[tag]
             at = match.end()
         result += self.outbound[at:]
-        return True, output / result
+        return True, output_path / result
 
 
 SOURCES = [
@@ -120,7 +120,7 @@ class FileActionType(Protocol):
 
 class ProjectActionType(Protocol):
     def __call__(
-        self, path: Path, attachments: Attachments, progress: Progress = None, task: TaskID = None
+        self, path: Path, attachments: Attachments, progress: Progress | None = None, task: TaskID | None = None
     ): ...
 
 
@@ -132,7 +132,7 @@ class BuildScript(NamedTuple):
     mount: str
 
 
-def prepare(target: Path, progress: Progress = None, prog_task: TaskID = None):
+def prepare(target: Path, progress: Progress, prog_task: TaskID):
     copies = 0
     filec = 0
     validates = 0
@@ -168,6 +168,7 @@ def fix_rel_url(path: Path, att: FileAttachments):
     if path.suffix != ".html":
         return
     page = att.soup
+    assert page is not None
     build = att.build_script
     if build.mount == "":
         return
@@ -226,6 +227,7 @@ def noscript_v2(target: Path, attach: FileAttachments):
     if target.suffix != ".html":
         return
     struct = attach.soup
+    assert struct is not None
     attach.soup_modified = True
     for e in struct.find_all("script"):
         e.decompose()
@@ -257,6 +259,7 @@ def noscript(target: Path, _: Attachments, progr: Progress, task: TaskID):
                 (Path(base) / file).unlink()
     progr.update(task, total=len(targets))
     missing_template = process_noscript(target / "var_unavailable.html", force=True)
+    assert missing_template is not None
     for target in targets:
         struct = process_noscript(target)
         if struct is None:
