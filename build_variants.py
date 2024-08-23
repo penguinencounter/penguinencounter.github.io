@@ -352,8 +352,8 @@ if __name__ == "__main__":
                     for x in range(idx, idx + len(this_batch)):
                         prog.start_task(tasks[x])
                         prog.update(tasks[x], total=len(paths))
-                    attach = FileAttachments(script, p)
                     for path in paths:
+                        attach = FileAttachments(script, p)
                         for i, (_, process) in enumerate(this_batch):
                             process = cast(FileActionType, process)
                             if not (path.exists() and path.is_file()):
