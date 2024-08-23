@@ -88,9 +88,9 @@ class SourceMap(MapProvider):
 SOURCES = [
     DiscardMap(r"^node_modules"),
     DiscardMap(r"^deploy"),
-    SourceMap(r"(dist[/\\].*)$", r"$1$"),
-    SourceMap(r"(static[/\\].*)$", r"$1$"),
-    SourceMap(r"(secret_deploy[/\\].*)$", r"$1$"),
+    SourceMap(r"^(dist[/\\].*)$", r"$1$"),
+    SourceMap(r"^(static[/\\].*)$", r"$1$"),
+    SourceMap(r"^(secret_deploy[/\\].*)$", r"$1$"),
     SourceMap(r"^LICENSE$"),
     SourceMap(r"^src[/\\](.*?\.html)$", "$1$"),
 ]
@@ -353,8 +353,8 @@ if __name__ == "__main__":
                         prog.start_task(tasks[x])
                         prog.update(tasks[x], total=len(paths))
                     for path in paths:
-                        attach = FileAttachments(script, p)
                         for i, (_, process) in enumerate(this_batch):
+                            attach = FileAttachments(script, p)
                             process = cast(FileActionType, process)
                             if not (path.exists() and path.is_file()):
                                 prog.advance(tasks[idx + i])
