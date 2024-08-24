@@ -64,7 +64,8 @@ const config = {
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
     },
-    devtool: 'eval'
+    devtool: 'eval',
+    cache: false
 };
 
 module.exports = () => {
@@ -73,6 +74,10 @@ module.exports = () => {
         config.devtool = 'source-map';
     } else {
         config.mode = 'development';
+        config.cache = {
+            type: 'filesystem',
+            buildDependencies: {config: [__filename]}
+        }
     }
     return config;
 };

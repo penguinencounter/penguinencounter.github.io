@@ -1,0 +1,9 @@
+@mixin icon($font-size, $icon) {
+    display: inline-block;
+    padding-left: calc($font-size + 4px);
+    background: transparent $icon no-repeat left center;
+}
+
+.icon.-arrow-back {
+    @include icon(20px, url(icons/arrow_back_20dp.svg));
+}
