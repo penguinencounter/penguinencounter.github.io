@@ -1,19 +1,6 @@
 @use "_definitions.scss" as def;
 @use "sass:list";
-
-@font-face {
-    font-family: "Rubik";
-    src: url("./fonts/Rubik-VariableFont_wght.ttf");
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "Rubik";
-    src: url("./fonts/Rubik-Italic-VariableFont_wght.ttf");
-    font-style: italic;
-    font-display: swap;
-}
+@import "fonts.scss";
 
 html,
 body {

@@ -23,6 +23,9 @@ const config = {
         "404": [
             './src/styles/404.scss',
             './src/ts/404.ts',
+        ],
+        tool: [
+            "./src/styles/tool.scss"
         ]
     },
     output: {

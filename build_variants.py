@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Literal, NamedTuple, Protocol, cast
@@ -305,8 +306,14 @@ if __name__ == "__main__":
     output = Path("deploy")
     shutil.rmtree(output, ignore_errors=True)
     os.makedirs(output)
+    targets = []
+    for name in sys.argv[1:]:
+        targets.append(name)
     for script in builds:
         name = script.name
+        if targets and name not in targets:
+            rp(f"Skipping [bold yellow]{name}[/]")
+            continue
         mount = script.mount
         with tempfile.TemporaryDirectory() as td, Progress(
             TextColumn("[progress.description]{task.description}"),
