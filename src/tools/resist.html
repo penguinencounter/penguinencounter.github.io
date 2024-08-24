@@ -9,13 +9,22 @@
 </head>
 <body>
     <nav id="top">
-        <a href="/" class="item">
+        <a href="/" class="item selectable">
             <div class="icon -arrow-back"></div>
-            <div>Back</div>
+            <div class="-label">Back</div>
         </a>
         <h2 class="item heading">
             Resistor Calculator
         </h2>
+        <div style="flex-grow: 1;"></div>
+        <button id="clear" class="item selectable">
+            <div class="icon -backspace"></div>
+            <div class="-label">Start over</div>
+        </button>
+        <button id="share" class="item selectable">
+            <div class="icon -share"></div>
+            <div class="-label">Share (nonfunctional)</div>
+        </button>
     </nav>
     <main id="main">
 

@@ -12,6 +12,10 @@ html, body {
     box-sizing: border-box;
 }
 
+@property --color-stop {
+    syntax: '<angle>'
+}
+
 nav#top {
     height: max-content;
     background-color: #333;
@@ -32,9 +36,25 @@ nav#top {
         align-items: center;
         width: max-content;
         margin: 0;
+        background-color: transparent;
+        border: none;
+        font-family: 'Rubik', sans-serif;
+        font-size: 1.2rem;
+        transition: background-color ease-in-out 0.2s, border-width ease 0.1s;
+        border-bottom: none;
+        border-top: none;
+        flex-shrink: 0;
         
         & .icon {
             align-self: stretch;
+        }
+        @media screen and (max-width: 800px) {
+            & .icon {
+                background-position: center center;
+            }
+            & .-label {
+                display: none;
+            }
         }
 
         @at-root #{selector-unify(&, a)} {
@@ -47,7 +67,13 @@ nav#top {
         }
 
         &:hover {
-            background-color: #0008;
+            background-color: #0004;
+
+            &.selectable {
+                background-color: #0008;
+                border-bottom: 2px solid white;
+                border-top: 2px solid white;
+            }
             
             @at-root #{selector-unify(&, a)} {
                 text-decoration: underline;

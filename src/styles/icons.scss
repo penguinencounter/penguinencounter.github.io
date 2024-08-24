@@ -7,3 +7,9 @@
 .icon.-arrow-back {
     @include icon(20px, url(icons/arrow_back_20dp.svg));
 }
+.icon.-backspace {
+    @include icon(20px, url(icons/backspace_20dp.svg));
+}
+.icon.-share {
+    @include icon(20px, url(icons/share_20dp.svg));
+}
