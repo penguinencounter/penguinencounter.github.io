@@ -1,11 +1,23 @@
-@import "fonts.scss";
-@import "icons.scss";
+@use "sass:selector";
+@use "fonts.scss";
+@use "icons.scss";
+
+@mixin break-mobile {
+    @media screen and (max-width: 800px) {
+        @content;
+    }
+}
+
+.hide {
+    display: none !important;
+}
 
 html, body {
     margin: 0;
     padding: 0;
     background-color: #111;
     font-family: 'Rubik', sans-serif;
+    color: #fff;
 }
 
 *:not(.override-box-sizing) {
@@ -48,7 +60,7 @@ nav#top {
         & .icon {
             align-self: stretch;
         }
-        @media screen and (max-width: 800px) {
+        @include break-mobile {
             & .icon {
                 background-position: center center;
             }
@@ -57,7 +69,7 @@ nav#top {
             }
         }
 
-        @at-root #{selector-unify(&, a)} {
+        @at-root #{selector.unify(&, a)} {
             text-decoration: none;
         }
 
@@ -75,14 +87,9 @@ nav#top {
                 border-top: 2px solid white;
             }
             
-            @at-root #{selector-unify(&, a)} {
+            @at-root #{selector.unify(&, a)} {
                 text-decoration: underline;
             }
         }
     }
-}
-
-main#main {
-    padding: 10px;
-
 }

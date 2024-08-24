@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/dist/tool.css">
+    <link rel="stylesheet" href="/dist/resist_tool.css">
     <title>Resistor Calculator</title>
     <meta name="variants" data-deny data-target="nojs">
 </head>
+
 <body>
     <nav id="top">
         <a href="/" class="item selectable">
@@ -27,7 +29,30 @@
         </button>
     </nav>
     <main id="main">
-
+        <div id="tool-stack">
+            <section class="panel">
+                <h3>Band count</h3>
+                <div class="picker-array">
+                    <label for="band_count_3" class="pick">
+                        <input type="radio" name="band_count" id="band_count_3" value="3" class="pick-input" aria-label="3 bands">
+                        3
+                    </label>
+                    <label for="band_count_4" class="pick">
+                        <input type="radio" name="band_count" id="band_count_4" value="4" class="pick-input" aria-label="4 bands" checked>
+                        4
+                    </label>
+                    <label for="band_count_5" class="pick">
+                        <input type="radio" name="band_count" id="band_count_5" value="5" class="pick-input" aria-label="5 bands">
+                        5
+                    </label>
+                    <label for="band_count_6" class="pick">
+                        <input type="radio" name="band_count" id="band_count_6" value="6" class="pick-input" aria-label="6 bands">
+                        6
+                    </label>
+                </div>
+            </section>
+        </div>
     </main>
 </body>
+
 </html>

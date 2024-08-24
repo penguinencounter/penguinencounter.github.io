@@ -24,8 +24,8 @@ const config = {
             './src/styles/404.scss',
             './src/ts/404.ts',
         ],
-        tool: [
-            "./src/styles/tool.scss"
+        resist_tool: [
+            "./src/styles/resist_tool.scss"
         ]
     },
     output: {

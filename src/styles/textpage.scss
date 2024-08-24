@@ -1,6 +1,6 @@
 @use "_definitions.scss" as def;
-@import "shared.scss";
-@import "encrypted.scss";
+@use "shared.scss";
+@use "encrypted.scss";
 
 body {
     display: flex;
