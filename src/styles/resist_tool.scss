@@ -52,6 +52,11 @@ main#main {
     inherits: true;
     initial-value: 0;
 }
+@property --i-colorimg {
+    syntax: "<color>|<image>";
+    inherits: true;
+    initial-value: #ff00ff;
+}
 
 .pick {
     --focus: #b080ff;
@@ -103,6 +108,34 @@ main#main {
         & .-text {
             padding: var(--i-padding);
         }
+    }
+}
+
+.panel#visualization {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+#resistor {
+    width: min(100%, 200px);
+}
+
+.calculation-color {
+    position: relative;
+    --i-colorimg: #ff00ff;
+
+    &.-insignificant {
+        color: #b0b0b0;
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        top: calc(100% - 1px);
+        right: 0;
+        bottom: -3px;
+        left: 0;
+        background: var(--i-colorimg, #ff00ff);
+        opacity: 0.8;
     }
 }
 
