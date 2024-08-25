@@ -25,7 +25,8 @@ const config = {
             './src/ts/404.ts',
         ],
         resist_tool: [
-            "./src/styles/resist_tool.scss"
+            "./src/styles/resist_tool.scss",
+            "./src/ts/resistor_calculator.ts"
         ]
     },
     output: {
