@@ -193,6 +193,14 @@ function onBandCountChanged(event: { target: EventTarget | null }) {
     }
 }
 
+function clear() {
+    document.querySelectorAll(".clear-within").forEach(e => {
+        e.querySelectorAll("input[type=radio]:checked").forEach(e => {
+            ;(e as HTMLInputElement).checked = false
+        })
+    })
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".band-count-input").forEach((el) => {
         const htmlEl = el as HTMLInputElement
@@ -201,6 +209,9 @@ window.addEventListener("DOMContentLoaded", () => {
             onBandCountChanged({ target: el })
         }
     })
+
+    document.getElementById("clear")!.addEventListener("click", clear)
+
     constructOptions(document.getElementById("band1")!, "band1", "Digit 1", Digits)
     constructOptions(document.getElementById("band2")!, "band2", "Digit 2", Digits)
     constructOptions(document.getElementById("band3")!, "band3", "Digit 3", Digits)

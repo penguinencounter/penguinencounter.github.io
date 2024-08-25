@@ -1,0 +1,16 @@
+<svg viewBox="0 0 200 65">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#5c563e" offset="0%" />
+      <stop stop-color="#6e6850" offset="20%" />
+      <stop stop-color="#5c563e" offset="100%" />
+    </linearGradient>
+  </defs>
+  <path d="M0,5l5,-5h30l10,10L155,10l10,-10l30,0l5,5V60l-5,5h-30l-10,-10H45l-10,10H5l-5,-5Z" fill="url(#bodyGrad)" />
+  <path id="stripe1" fill="#ff00ff" d="M25,0h10l5,5V60l-5,5h-10Z" />
+  <path id="stripe2" fill="#ffb0ff" d="M50,10h15V55h-15Z" />
+  <path id="stripe3" fill="#ffffb0" d="M75,10h15V55h-15Z" />
+  <path id="stripe4" fill="#b0ffb0" d="M100,10h15V55h-15Z" />
+  <path id="stripe5" fill="#b080ff" d="M125,10h15V55h-15Z" />
+  <path id="stripe6" fill="#80b0ff" d="M160,5l5,-5h10V65h-10l-5,-5Z" />
+</svg>
