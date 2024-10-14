@@ -29,6 +29,17 @@ body {
     }
 }
 
+.cardset {
+    display: grid;
+    margin: 0 16px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 8px;
+}
+.cardset > .card {
+    margin: 0;
+    background-color: def.$layer2;
+}
+
 main.content {
     z-index: 10;
     position: relative;
@@ -48,6 +59,7 @@ main.content ._above {
     box-sizing: border-box;
     background-image: linear-gradient(0deg, #000000b0 0%, transparent 100%)
 }
+
 
 header.banner-title {
     font-size: min(5rem, 10vw);

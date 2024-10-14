@@ -45,3 +45,12 @@ $banner-default: ray(50%, 60%), ray(65%, 70%), ray(72.5%, 75%), conic-gradient(f
 
 $tiers-100: coloredTiers(130deg, 484deg, 50%, 75%, 100%, 6);
 $tiers-25: coloredTiers(130deg, 484deg, 50%, 75%, 25%, 6);
+
+$backdrop: #050505;
+$primary-content: #101010;
+$normal-text: #eeeeee;
+$layer1: #202020;
+$layer2: #303030;
+$bg-note: #202040;
+$bg-warning: #404020;
+$bg-error: oklch(1 1 0deg);
