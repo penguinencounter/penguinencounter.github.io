@@ -47,7 +47,7 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: |
-          pnpm ci
+          pnpm i
           pip install -r requirements.txt
       - name: Build Webpack
         run: npm run build
