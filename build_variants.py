@@ -200,6 +200,19 @@ def fix_rel_url(path: Path, att: FileAttachments):
         att.soup_modified = True
 
 
+def canonicals(target: Path, attach: FileAttachments):
+    if target.suffix != ".html":
+        return
+    struct = attach.soup
+    assert struct is not None
+    if not (el := struct.select_one('meta[name="canonical-options"]')):
+        return
+    value = el.attrs["content"]
+    print(target.relative_to(attach.base_path))
+    struct.new_tag("link", rel="canonical", href=value)
+    attach.soup_modified = True
+
+
 def process_variant_desc(page: bs4.BeautifulSoup, target_name: str) -> bool:
     # <meta name="variants" allow target="nojs">
     if page.select('meta[name="variants"][data-deny-all]'):
@@ -301,7 +314,7 @@ if __name__ == "__main__":
         BuildScript(
             "nojs", [jinja_task, ("file", noscript_v2), ("file", fix_rel_url), ("project", noscript)], "v/nojs"
         ),
-        BuildScript("full", [jinja_task, ("file", fix_rel_url)], ""),
+        BuildScript("full", [jinja_task, ("file", canonicals), ("file", fix_rel_url)], ""),
     ]
     output = Path("deploy")
     shutil.rmtree(output, ignore_errors=True)
