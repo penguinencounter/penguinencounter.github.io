@@ -1,0 +1,15 @@
+! "hey you can chat" popups
+askubuntu.com##.is-visible.fs-body1.wmn3.s-popover
+stackoverflow.com##.is-visible.fs-body1.wmn3.s-popover
+serverfault.com##.is-visible.fs-body1.wmn3.s-popover
+superuser.com##.is-visible.fs-body1.wmn3.s-popover
+stackexchange.com##.is-visible.fs-body1.wmn3.s-popover
+
+! cute but distracting
+###oneko
+
+! Jun 2, 2025: AI search results
+www.google.com###Odp5De
+
+! Jun 2, 2025: Vanilla Tweaks sponsor slot
+vanillatweaks.net##.bloom
