@@ -1,3 +1,11 @@
+! Title: PenguinEncounter's personal shared filters
+! Expires: 12 hours
+! Last modified: Tue, 03 Jun 2025 04:01:12 +0000
+! License: https://penguinencounter.github.io/LICENSE
+! *** penguinencounter:filters.txt ***
+
+! don't forget to update the Last Modified!
+
 ! "hey you can chat" popups
 askubuntu.com##.is-visible.fs-body1.wmn3.s-popover
 stackoverflow.com##.is-visible.fs-body1.wmn3.s-popover
