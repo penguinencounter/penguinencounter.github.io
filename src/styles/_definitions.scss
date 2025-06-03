@@ -1,3 +1,4 @@
+@use "sass:list";
 @use "sass:math";
 @use "sass:color";
 
@@ -10,7 +11,7 @@
     $hue: calc($fromHue + $pct * ($toHue - $fromHue));
     $deg: calc($pct * $toDeg);
     $color: hsl($hue $sat $val);
-    $gradient: append($gradient, $color $deg, comma);
+    $gradient: list.append($gradient, $color $deg, comma);
 }
 
 @return $gradient;
@@ -30,7 +31,7 @@
     $components: ();
     @for $i from 0 to $count {
         $hu: calc(($toHue - $fromHue) * ($i / $count) + $fromHue);
-        $components: append($components, hsla($hu, $sat, $light, $alpha));
+        $components: list.append($components, hsla($hu, $sat, $light, $alpha));
     } 
     @return $components;
 }
