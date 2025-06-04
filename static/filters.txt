@@ -1,6 +1,6 @@
 ! Title: PenguinEncounter's personal shared filters
 ! Expires: 12 hours
-! Last modified: Tue, 03 Jun 2025 04:01:12 +0000
+! Last modified: Wed, 04 Jun 2025 03:25:00 -0700
 ! License: https://penguinencounter.github.io/LICENSE
 ! *** penguinencounter:filters.txt ***
 
@@ -21,3 +21,7 @@ www.google.com###Odp5De
 
 ! Jun 2, 2025: Vanilla Tweaks sponsor slot
 vanillatweaks.net##.bloom
+
+! YouTube temporary https://github.com/uBlockOrigin/uAssets/issues/27415#issuecomment-2932940821
+||googlevideo.com/videoplayback*&ctier=L&*%2Cctier%2C$xhr,3p,domain=m.youtube.com|music.youtube.com|www.youtube.com,badfilter
+
