@@ -1,7 +1,8 @@
 # Let's go
 
 ```
-npm run build
+python build_variants.py
+pnpm run build
 ```
 
 # Crypto

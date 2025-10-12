@@ -2,13 +2,13 @@
   "private": true,
   "devDependencies": {
     "css-loader": "^7.1.2",
-    "mini-css-extract-plugin": "^2.9.2",
-    "sass": "^1.89.1",
+    "mini-css-extract-plugin": "^2.9.4",
+    "sass": "^1.93.2",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1"
   },
   "version": "1.0.0",
@@ -19,7 +19,5 @@
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch"
-  },
-  "dependencies": {
   }
 }
